@@ -47,8 +47,9 @@ mkdir -p /ftp\n\
 chown ftp:ftp /ftp\n\
 chmod 775 /ftp\n\
 service proftpd start\n\
-service tftpd-hpa start' \
+service tftpd-hpa start\n\
+tail -F /var/log/proftpd/proftpd.log' \
         > /start_ftp.sh; chmod +x /start_ftp.sh
 
 VOLUME [ "/ftp" ]
-CMD [ "/init.sh", "/start_ftp.sh" ]
+CMD [ "dumb-init", "/start_ftp.sh" ]

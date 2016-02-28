@@ -4,9 +4,8 @@ FROM debian:jessie
 COPY __gns3__ /__gns3__
 ENTRYPOINT [ "__gns3__/init.sh" ]
 
-# simple init: starts service, a bash shell, reaps zombies,
-# forwards stop signal to service processes for a graceful shutdown
-COPY init.sh /
+# minimal init, see https://github.com/Yelp/dumb-init
+COPY dumb-init* /usr/bin/dumb-init
 
 RUN set -ex \
     && apt-get update \
@@ -22,4 +21,4 @@ RUN set -ex \
         syslogd telnet tftp time traceroute traceroute6 udhcpc udhcpd \
         unix2dos unlzma unlzop unxz unzip usleep uudecode uuencode \
         vconfig vi wget xz xzcat; do \
-            ln -s /bin/busybox /usr/local/bin/$cmd; done 
+            ln -s /bin/busybox /usr/local/bin/$cmd; done
