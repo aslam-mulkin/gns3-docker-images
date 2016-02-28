@@ -1,13 +1,15 @@
 FROM gns3-debian-base
 
-RUN apt-get update && \
-    echo 'proftpd-basic shared/proftpd/inetd_or_standalone string standalone' | debconf-set-selections && \
-    DEBIAN_FRONTEND=noninteractive apt-get -q -y install proftpd-basic tftpd-hpa && \
-    rm -rf /var/lib/apt/lists/*; \
+RUN set -ex \
+    && apt-get update \
+    && echo 'proftpd-basic shared/proftpd/inetd_or_standalone string standalone' | debconf-set-selections \
+    && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
+        proftpd-basic tftpd-hpa \
+    && rm -rf /var/lib/apt/lists/* \
 \
-    addgroup --system ftp; \
-    usermod -d /ftp -g ftp ftp; \
-    /bin/echo -e '\
+    && addgroup --system ftp \
+    && usermod -d /ftp -g ftp ftp \
+    && /bin/echo -e '\
 \x23 A basic anonymous configuration, no security !!!\n\
 \n\
 <Anonymous ~ftp>\n\
@@ -28,18 +30,18 @@ RUN apt-get update && \
   DisplayChdir		.message\n\
 \n\
 </Anonymous>' \
-        > /etc/proftpd/conf.d/anonymous.conf; \
+        > /etc/proftpd/conf.d/anonymous.conf \
 \
-    /bin/echo -e '\
+    && /bin/echo -e '\
 \x23 /etc/default/tftpd-hpa\n\
 \n\
 TFTP_USERNAME="ftp"\n\
 TFTP_DIRECTORY="/ftp"\n\
 TFTP_ADDRESS=":69"\n\
 TFTP_OPTIONS="--secure --permissive --create --umask 022"' \
-        > /etc/default/tftpd-hpa; \
+        > /etc/default/tftpd-hpa \
 \
-    /bin/echo -e '#!/bin/sh\n\
+    && /bin/echo -e '#!/bin/sh\n\
 \n\
 mkdir -p /ftp\n\
 chown ftp:ftp /ftp\n\
