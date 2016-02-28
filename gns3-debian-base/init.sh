@@ -23,12 +23,6 @@ trap 'trap_child' CHLD
 # start service, must background itself
 [ $# -gt 0 ] && "$@"
 
-# start shell in background
-echo '(sleep 1; kill $$) &' > /tmp/start_sh
-echo 'bash 2>&1' >> /tmp/start_sh
-sh /tmp/start_sh 2> /dev/null
-rm /tmp/start_sh
-
 # wait forever
 mkfifo /tmp/.init_do_not_delete 2> /dev/null
 while [ true ]; do

@@ -47,5 +47,12 @@ for i in "" 0 1 2 3 4 5 6 7 8 9; do
 	[ -n "$dest" ] && ip -family inet6 route add $net via $dest
 done
 
+# start shell in background
+echo '(sleep 1; kill $$) &' > /tmp/start_sh
+echo 'bash 2>&1' >> /tmp/start_sh
+sh /tmp/start_sh 2> /dev/null
+rm /tmp/start_sh
+echo
+
 # continue normal docker startup
 exec "$@"

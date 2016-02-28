@@ -8,10 +8,12 @@ ENTRYPOINT [ "__gns3__/init.sh" ]
 # forwards stop signal to service processes for a graceful shutdown
 COPY init.sh /
 
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get -q -y install busybox && \
-    rm -rf /var/lib/apt/lists/*; \
-    for cmd in \
+RUN set -ex \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
+        busybox \
+    && rm -rf /var/lib/apt/lists/* \
+    && for cmd in \
         ar arp arping ash brctl bunzip2 bzcat bzip2 cal cpio dc depmod \
         dos2unix dumpleases freeramdisk ftpget ftpput hexdump httpd \
         ifconfig insmod ipcalc killall klogd less logread lsmod \

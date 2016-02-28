@@ -13,11 +13,14 @@ differs from the normal docker environment.
 - /etc/hosts is empty
 - /etc/resolv.conf is empty
 
-`__GNS3__/init.sh` takes care about that.
+`__gns3__/init.sh` takes care about that.
 It should be easily portable to other linux distributions.
 
 In future GNS3 (hopefully) will take over that task,
 then docker images need no special adaption for GNS3.
+
+Furthermore it starts a shell for debugging purposes.
+As soon GNS3 implements a "docker exec", this can be dropped.
 
 ## Simple Init
 
@@ -25,13 +28,8 @@ The simple shell script `init.sh` handles the basic stuff
 all docker images need:
 
 - Start the service
-- Start a shell
 - Reaps zombies
 - Forwards the stop signal to service processes for a graceful shutdown
-
-Starting the shell is mainly useful in the GNS3 environment,
-as there is currently no "docker exec" equivalent.
-So that might be moved to the GNS3 specific part or removed altogether.
 
 Furthermore it adds busybox to the image and links all commands to busybox,
 that busybox provides but that are not included in the base debian image.
