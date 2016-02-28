@@ -22,14 +22,16 @@ then docker images need no special adaption for GNS3.
 Furthermore it starts a shell for debugging purposes.
 As soon GNS3 implements a "docker exec", this can be dropped.
 
-## Simple Init
+## Minimal init
 
-The simple shell script `init.sh` handles the basic stuff
+The minimal init system `dumb-init` handles the basic stuff
 all docker images need:
 
 - Start the service
 - Reaps zombies
 - Forwards the stop signal to service processes for a graceful shutdown
+
+For further information, see https://github.com/Yelp/dumb-init
 
 Furthermore it adds busybox to the image and links all commands to busybox,
 that busybox provides but that are not included in the base debian image.
