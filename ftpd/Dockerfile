@@ -43,6 +43,8 @@ TFTP_OPTIONS="--secure --permissive --create --umask 022"' \
 \
     && /bin/echo -e '#!/bin/sh\n\
 \n\
+[ -n "$FTP_UID" ] && usermod -o -u "$FTP_UID" ftp\n\
+[ -n "$FTP_GID" ] && groupmod -o -g "$FTP_GID" ftp\n\
 mkdir -p /ftp\n\
 chown ftp:ftp /ftp\n\
 chmod 775 /ftp\n\
