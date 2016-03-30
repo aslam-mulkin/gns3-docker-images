@@ -1,4 +1,7 @@
-FROM gns3-debian-base
+FROM debian:jessie
+
+# minimal init, see https://github.com/Yelp/dumb-init
+COPY dumb-init* /usr/bin/dumb-init
 
 RUN set -ex \
     && apt-get update \
