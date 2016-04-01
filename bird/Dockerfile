@@ -23,7 +23,7 @@ mkdir -p /run/bird\n\
 [ -s /etc/bird/bird.conf ] && bird\n\
 [ -s /etc/bird/bird6.conf ] && bird6\n\
 \n\
-stty susp undef; exec bash -i' \
+exec bash -i' \
         > /start_bird.sh && chmod +x /start_bird.sh \
     && /bin/echo -e '#!/usr/bin/awk -f\n\
 \n\
@@ -49,4 +49,4 @@ BEGIN {\n\
         > /usr/local/bin/create_routes && chmod +x /usr/local/bin/create_routes
 
 VOLUME [ "/etc/bird" ]
-CMD [ "dumb-init", "/start_bird.sh" ]
+CMD [ "dumb-init", "-c", "/start_bird.sh" ]
