@@ -1,8 +1,5 @@
 FROM debian:jessie
 
-# minimal init, see https://github.com/Yelp/dumb-init
-COPY dumb-init* /usr/bin/dumb-init
-
 RUN set -ex \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
@@ -49,4 +46,4 @@ BEGIN {\n\
         > /usr/local/bin/create_routes && chmod +x /usr/local/bin/create_routes
 
 VOLUME [ "/etc/bird" ]
-CMD [ "dumb-init", "-c", "/start_bird.sh" ]
+CMD [ "/start_bird.sh" ]
