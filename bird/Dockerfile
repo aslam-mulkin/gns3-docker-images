@@ -1,3 +1,5 @@
+# BIRD routing daemon, see http://bird.network.cz
+
 FROM debian:jessie
 
 RUN set -ex \
