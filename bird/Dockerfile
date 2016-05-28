@@ -7,15 +7,15 @@ RUN set -ex \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
         bird vim-tiny \
     && rm -rf /var/lib/apt/lists/* \
-    && mv /etc/bird/bird.conf /etc/bird.conf.example \
-    && chown root:root /etc/bird.conf.example \
-    && chmod 644 /etc/bird.conf.example \
-    && rm -f /etc/bird/* \
+    && mv /etc/bird /etc/bird.orig \
+    && mkdir /etc/bird \
     && /bin/echo -e '#!/bin/sh\n\
 \n\
 \x23 copy example file\n\
 [ -s /etc/bird/bird.conf.example ] ||\n\
-	cp -p /etc/bird.conf.example /etc/bird/\n\
+	cp -p /etc/bird.orig/bird.conf /etc/bird/bird.conf.example &&\n\
+	chown root:root /etc/bird/bird.conf.example &&\n\
+	chmod 644 /etc/bird/bird.conf.example\n\
 \n\
 \x23 start bird daemon\n\
 mkdir -p /run/bird\n\
