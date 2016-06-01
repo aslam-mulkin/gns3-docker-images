@@ -46,11 +46,17 @@ TFTP_OPTIONS="--secure --permissive --create --umask 022"' \
 \
     && /bin/echo -e '#!/bin/sh\n\
 \n\
-[ -n "$FTP_UID" ] && usermod -o -u "$FTP_UID" ftp\n\
-[ -n "$FTP_GID" ] && groupmod -o -g "$FTP_GID" ftp\n\
 mkdir -p /ftp\n\
-chown ftp:ftp /ftp\n\
-chmod 775 /ftp\n\
+uid=`stat -c %u /ftp`\n\
+if [ 0$uid -eq 0 ]; then\n\
+	chown ftp:ftp /ftp\n\
+	chmod 775 /ftp\n\
+else\n\
+	usermod -o -u $uid ftp\n\
+	gid=`stat -c %g /ftp`\n\
+	groupmod -o -g $gid ftp\n\
+fi\n\
+\n\
 service proftpd start\n\
 service tftpd-hpa start\n\
 tail -F /var/log/proftpd/proftpd.log' \
