@@ -46,17 +46,21 @@ TFTP_OPTIONS="--secure --permissive --create --umask 022"' \
 \
     && /bin/echo -e '#!/bin/sh\n\
 \n\
-mkdir -p /ftp\n\
-uid=`stat -c %u /ftp`\n\
-if [ 0$uid -eq 0 ]; then\n\
-	chown ftp:ftp /ftp\n\
-	chmod 775 /ftp\n\
-else\n\
+\x23 try to set ftp to same user/group id as GNS3 process\n\
+\x23 /etc/network/interfaces is managed by GNS3\n\
+uid=`stat -c %u /etc/network/interfaces`\n\
+if [ 0$uid -ne 0 ]; then\n\
+	gid=`stat -c %g /etc/network/interfaces`\n\
 	usermod -o -u $uid ftp\n\
-	gid=`stat -c %g /ftp`\n\
 	groupmod -o -g $gid ftp\n\
 fi\n\
 \n\
+\x23 create /ftp directory\n\
+mkdir -p /ftp\n\
+chown ftp:ftp /ftp\n\
+chmod 775 /ftp\n\
+\n\
+\x23 start ftp and tftp services\n\
 service proftpd start\n\
 service tftpd-hpa start\n\
 tail -F /var/log/proftpd/proftpd.log' \
