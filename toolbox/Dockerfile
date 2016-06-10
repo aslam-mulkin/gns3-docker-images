@@ -25,7 +25,7 @@ RUN set -ex \
 # install remaining tools
 #
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        net-tools tcpdump telnet traceroute iperf3 vim-tiny \
+        net-tools tcpdump telnet traceroute iperf3 openssh-client vim-tiny \
     && rm -rf /var/lib/apt/lists/*
 
 CMD [ "bash" ]
