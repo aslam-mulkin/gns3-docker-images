@@ -44,9 +44,11 @@ RUN set -ex \
     && /bin/echo -e '\
 \x23!/bin/sh\n\
 \n\
+cd\n\
 [ -e "/root/.mozilla" ] || start_url="about:home"\n\
 firefox $start_url &\n\
 flwm -x' \
         > /start_browser.sh; chmod +x /start_browser.sh
 
+VOLUME [ "/root" ]
 CMD [ "dumb-init", "/start_browser.sh" ]

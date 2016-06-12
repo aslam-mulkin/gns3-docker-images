@@ -28,4 +28,5 @@ RUN set -ex \
         net-tools tcpdump telnet traceroute iperf3 openssh-client vim-tiny \
     && rm -rf /var/lib/apt/lists/*
 
-CMD [ "bash" ]
+VOLUME [ "/root" ]
+CMD [ "sh", "-c", "cd; exec bash -i" ]
