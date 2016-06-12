@@ -1,4 +1,4 @@
-# Networking Toolbox with web browser
+# Networking Toolbox with Web Browser
 
 This image contains the following networking tools:
 

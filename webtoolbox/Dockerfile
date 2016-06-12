@@ -3,9 +3,10 @@
 FROM debian:jessie
 
 # minimal init, see https://github.com/Yelp/dumb-init
-COPY dumb-init* /usr/bin/dumb-init
+ADD https://github.com/Yelp/dumb-init/releases/download/v1.0.3/dumb-init_1.0.3_amd64 /usr/local/sbin/dumb-init
 
 RUN set -ex \
+    && chmod 755 /usr/local/sbin/dumb-init \
     && apt-get update \
 #
 # compile and install mtools (msend & mreceive)
