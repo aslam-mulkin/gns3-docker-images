@@ -30,7 +30,7 @@ RUN set -ex \
 #
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
         net-tools tcpdump telnet traceroute iperf3 openssh-client vim-tiny \
-        firefox-esr xterm flwm menu \
+        firefox-esr xterm jwm menu \
     && rm -rf /var/lib/apt/lists/* \
     && /bin/echo -e '\
 ?package(firefox-esr):\\\n\
@@ -39,7 +39,8 @@ RUN set -ex \
  title="Mozilla Firefox"\\\n\
  command="firefox"' \
         > /etc/menu/firefox \
-    && sed -i -e 's/^rootsection.*/rootsection="\/"/' /etc/menu-methods/flwm \
+    && echo "postrun="\""sed -i '/^    </ d' debian-menu"\" >> /etc/menu-methods/jwm \
+    && sed -i 's/\(Desktops width\)="[0-9]*"/\1="2"/' /etc/jwm/system.jwmrc \
     && update-menus \
     && /bin/echo -e '\
 \x23!/bin/sh\n\
@@ -47,7 +48,7 @@ RUN set -ex \
 cd\n\
 [ -e "/root/.mozilla" ] || start_url="about:home"\n\
 firefox $start_url &\n\
-flwm -x' \
+jwm' \
         > /start_browser.sh; chmod +x /start_browser.sh
 
 VOLUME [ "/root" ]
