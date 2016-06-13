@@ -9,7 +9,8 @@ RUN set -ex \
     && rm -rf /var/lib/apt/lists/* \
     && mv /etc/bird/bird.conf /etc/bird/bird.conf.example \
     && mv /etc/bird/bird6.conf /etc/bird/bird6.conf.example \
-    && /bin/echo -e '#!/bin/sh\n\
+    && /bin/echo -e '\
+\x23!/bin/sh\n\
 \n\
 \x23 start bird daemon\n\
 mkdir -p /run/bird\n\
@@ -18,7 +19,8 @@ mkdir -p /run/bird\n\
 \n\
 exec bash -i' \
         > /start_bird.sh && chmod +x /start_bird.sh \
-    && /bin/echo -e '#!/usr/bin/awk -f\n\
+    && /bin/echo -e '\
+\x23!/usr/bin/awk -f\n\
 \n\
 BEGIN {\n\
 	if (ARGC < 3 || ARGC > 4) {\n\

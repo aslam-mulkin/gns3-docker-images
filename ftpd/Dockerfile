@@ -45,7 +45,8 @@ TFTP_ADDRESS=":69"\n\
 TFTP_OPTIONS="--secure --permissive --create --umask 022"' \
         > /etc/default/tftpd-hpa \
 \
-    && /bin/echo -e '#!/bin/sh\n\
+    && /bin/echo -e '\
+\x23!/bin/sh\n\
 \n\
 \x23 try to set ftp to same user/group id as GNS3 process\n\
 \x23 /etc/network/interfaces is managed by GNS3\n\
