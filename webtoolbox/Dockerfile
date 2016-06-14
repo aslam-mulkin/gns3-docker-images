@@ -33,11 +33,27 @@ RUN set -ex \
         firefox-esr xterm jwm menu \
     && rm -rf /var/lib/apt/lists/* \
     && /bin/echo -e '\
+\x23!/bin/sh\n\
+\n\
+\x23 use home page on first start\n\
+[ -e "$HOME/.mozilla" ] || start_url="about:home"\n\
+\n\
+\x23 start firefox\n\
+start=$(date +%s)\n\
+firefox $start_url\n\
+status=$?\n\
+\n\
+\x23 workaround: restart firefox, if it crashes during initialization\n\
+if [ $status -eq 139 -a $(($(date +%s)-start)) -le 10 ]; then\n\
+        firefox $start_url\n\
+fi' \
+        > /usr/local/bin/start-firefox; chmod +x /usr/local/bin/start-firefox \
+    && /bin/echo -e '\
 ?package(firefox-esr):\\\n\
  needs="x11"\\\n\
  section="Applications"\\\n\
  title="Mozilla Firefox"\\\n\
- command="firefox"' \
+ command="start-firefox"' \
         > /etc/menu/firefox \
     && echo "postrun="\""sed -i '/^    </ d' debian-menu"\" >> /etc/menu-methods/jwm \
     && sed -i 's/\(Desktops width\)="[0-9]*"/\1="2"/' /etc/jwm/system.jwmrc \
@@ -46,8 +62,7 @@ RUN set -ex \
 \x23!/bin/sh\n\
 \n\
 cd\n\
-[ -e "/root/.mozilla" ] || start_url="about:home"\n\
-firefox $start_url &\n\
+start-firefox &\n\
 jwm' \
         > /start_browser.sh; chmod +x /start_browser.sh
 
