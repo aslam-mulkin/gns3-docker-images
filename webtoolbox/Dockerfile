@@ -30,7 +30,7 @@ RUN set -ex \
 #
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
         net-tools tcpdump telnet traceroute iperf3 openssh-client vim-tiny \
-        firefox-esr xterm jwm menu \
+        firefox-esr xfce4-terminal jwm menu \
     && rm -rf /var/lib/apt/lists/* \
     && /bin/echo -e '\
 \x23!/bin/sh\n\
@@ -58,6 +58,12 @@ fi' \
     && echo "postrun="\""sed -i '/^    </ d' debian-menu"\" >> /etc/menu-methods/jwm \
     && sed -i 's/\(Desktops width\)="[0-9]*"/\1="2"/' /etc/jwm/system.jwmrc \
     && update-menus \
+    && mkdir -p /root/.config/xfce4/terminal \
+    && /bin/echo -e '\
+[Configuration]\n\
+FontName=Monospace 10\n\
+Encoding=UTF-8' \
+        > /root/.config/xfce4/terminal/terminalrc \
     && /bin/echo -e '\
 \x23!/bin/sh\n\
 \n\
