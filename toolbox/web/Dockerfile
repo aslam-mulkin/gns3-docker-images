@@ -1,6 +1,6 @@
 # docker image with basic networking tools and web browser
 
-FROM toolbox-base
+FROM gns3/toolbox-base
 
 # minimal init, see https://github.com/Yelp/dumb-init
 ADD https://github.com/Yelp/dumb-init/releases/download/v1.0.3/dumb-init_1.0.3_amd64 /usr/local/sbin/dumb-init
