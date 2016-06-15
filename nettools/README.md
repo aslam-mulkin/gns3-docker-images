@@ -14,34 +14,34 @@ This appliance contains the following networking tools:
 
 It is divided into several sub-images:
 
-- toolbox-base  
+- nettools-base  
   This image includes the common utilities mentioned previously.
   It creates the foundation for the next images.
   It's not intended, that the user directly uses this image.
-- toolbox-cli  
+- nettools-cli  
   It adds a default command (bash) and a persistent directory (/root)
-  to the toolbox-base image.
-- toolbox-web  
-  This adds the Firefox web browser to the toolbox.
-  Like toolbox-cli, the /root directory is persistent.
+  to the nettools-base image.
+- nettools-web  
+  This adds the Firefox web browser to the nettools.
+  Like nettools-cli, the /root directory is persistent.
 
-## Build, run and publish
+## Build and publish the Images
 
 First the base image has to be created:
 
 ```
-docker build -t gns3/toolbox-base base
-docker push gns3/toolbox-base
+docker build -t gns3/nettools-base base
+docker push gns3/nettools-base
 ```
 
-Afterwards the cli and/or the web images can be build:
+Afterwards the cli and/or the web image can be build:
 
 ```
-docker build -t gns3/toolbox cli
-docker push gns3/toolbox
+docker build -t gns3/nettools cli
+docker push gns3/nettools
 ```
 
 ```
-docker build -t gns3/toolbox-web web
-docker push gns3/toolbox-web
+docker build -t gns3/nettools-web web
+docker push gns3/nettools-web
 ```
