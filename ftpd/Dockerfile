@@ -1,7 +1,7 @@
 FROM debian:jessie
 
 # minimal init, see https://github.com/Yelp/dumb-init
-ADD https://github.com/Yelp/dumb-init/releases/download/v1.0.3/dumb-init_1.0.3_amd64 /usr/local/sbin/dumb-init
+ADD https://github.com/Yelp/dumb-init/releases/download/v1.1.0/dumb-init_1.1.0_amd64 /usr/local/sbin/dumb-init
 
 RUN set -ex \
     && chmod 755 /usr/local/sbin/dumb-init \
