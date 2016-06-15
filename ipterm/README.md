@@ -1,4 +1,4 @@
-# Networking Toolbox
+# ipterm - Networking Toolbox
 
 This appliance contains the following networking tools:
 
@@ -14,34 +14,34 @@ This appliance contains the following networking tools:
 
 It is divided into several sub-images:
 
-- nettools-base  
+- ipterm-base  
   This image includes the common utilities mentioned previously.
   It creates the foundation for the next images.
   It's not intended, that the user directly uses this image.
-- nettools-cli  
-  It adds a default command (bash) and a persistent directory (/root)
-  to the nettools-base image.
-- nettools-web  
-  This adds the Firefox web browser to the nettools.
-  Like nettools-cli, the /root directory is persistent.
+- ipterm  
+  Based on ipterm-base it sets bash as the default command and
+  uses /root as a persistent directory.
+- webterm  
+  This adds the Firefox web browser to ipterm-base.
+  Like ipterm, the /root directory is persistent.
 
 ## Build and publish the Images
 
 First the base image has to be created:
 
 ```
-docker build -t gns3/nettools-base base
-docker push gns3/nettools-base
+docker build -t gns3/ipterm-base base
+docker push gns3/ipterm-base    (optional)
 ```
 
-Afterwards the cli and/or the web image can be build:
+Afterwards the cli and/or the web image can be built:
 
 ```
-docker build -t gns3/nettools cli
-docker push gns3/nettools
+docker build -t gns3/ipterm cli
+docker push gns3/ipterm
 ```
 
 ```
-docker build -t gns3/nettools-web web
-docker push gns3/nettools-web
+docker build -t gns3/webterm web
+docker push gns3/webterm
 ```
