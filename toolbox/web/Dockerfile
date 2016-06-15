@@ -12,7 +12,7 @@ RUN set -ex \
 # install web tools
 #
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        firefox-esr xfce4-terminal jwm menu \
+        firefox-esr lxterminal jwm menu \
     && rm -rf /var/lib/apt/lists/* \
     && /bin/echo -e '\
 \x23!/bin/sh\n\
@@ -40,16 +40,17 @@ fi' \
     && echo "postrun="\""sed -i '/^    </ d' debian-menu"\" >> /etc/menu-methods/jwm \
     && sed -i 's/\(Desktops width\)="[0-9]*"/\1="2"/' /etc/jwm/system.jwmrc \
     && update-menus \
-    && mkdir -p /root/.config/xfce4/terminal \
+    && mkdir -p /root/.config/lxterminal \
     && /bin/echo -e '\
-[Configuration]\n\
-FontName=Monospace 10\n\
-Encoding=UTF-8' \
-        > /root/.config/xfce4/terminal/terminalrc \
+[general]\n\
+scrollback=1000\n\
+fgcolor=#ffffff' \
+        > /root/.config/lxterminal/lxterminal.conf \
     && /bin/echo -e '\
 \x23!/bin/sh\n\
 \n\
 cd\n\
+export SHELL=/bin/bash\n\
 start-firefox &\n\
 jwm' \
         > /start_browser.sh; chmod +x /start_browser.sh
