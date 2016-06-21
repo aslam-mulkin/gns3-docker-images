@@ -12,7 +12,7 @@ RUN set -ex \
 # install web tools
 #
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        firefox-esr lxterminal jwm menu \
+        firefox-esr lxterminal jwm menu leafpad \
     && rm -rf /var/lib/apt/lists/* \
     && /bin/echo -e '\
 \x23!/bin/sh\n\
