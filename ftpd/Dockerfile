@@ -47,6 +47,7 @@ TFTP_OPTIONS="--secure --permissive --create --umask 022"' \
 \
     && /bin/echo -e '\
 \x23!/bin/sh\n\
+[ $$ -eq 1 ] && exec dumb-init "$0" "$@"\n\
 \n\
 \x23 try to set ftp to same user/group id as GNS3 process\n\
 \x23 /etc/network/interfaces is managed by GNS3\n\
@@ -66,7 +67,7 @@ chmod 775 /ftp\n\
 service proftpd start\n\
 service tftpd-hpa start\n\
 tail -F /var/log/proftpd/proftpd.log' \
-        > /start_ftp.sh; chmod +x /start_ftp.sh
+        > /etc/init.sh && chmod +x /etc/init.sh
 
 VOLUME [ "/ftp" ]
-CMD [ "dumb-init", "/start_ftp.sh" ]
+CMD [ "/etc/init.sh" ]

@@ -18,7 +18,7 @@ mkdir -p /run/bird\n\
 [ -s /etc/bird/bird6.conf ] && bird6\n\
 \n\
 exec bash -i' \
-        > /start_bird.sh && chmod +x /start_bird.sh \
+        > /etc/init.sh && chmod +x /etc/init.sh \
     && /bin/echo -e '\
 \x23!/usr/bin/awk -f\n\
 \n\
@@ -44,4 +44,4 @@ BEGIN {\n\
         > /usr/local/bin/create_routes && chmod +x /usr/local/bin/create_routes
 
 VOLUME [ "/etc/bird" ]
-CMD [ "/start_bird.sh" ]
+CMD [ "/etc/init.sh" ]
