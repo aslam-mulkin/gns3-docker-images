@@ -14,7 +14,6 @@ RUN set -ex \
 # add ostinato repository
 #
     && apt-key add /tmp/ostinato_repository.key \
-    && rm /tmp/ostinato_repository.key \
     && echo 'deb http://download.opensuse.org/repositories/home:/pstavirs:/ostinato/Debian_8.0/ /' > /etc/apt/sources.list.d/ostinato.list \
     && apt-get update \
 #
@@ -59,7 +58,7 @@ for DEVICE in `comm -13 /tmp/confdev /tmp/netdev`; do\n\
 	sysctl -q -w net.ipv6.conf.$DEVICE.disable_ipv6=1\n\
 	ip link set dev $DEVICE mtu 9000\n\
 	ip link set dev $DEVICE up\n\
-	done\n\
+done\n\
 rm /tmp/confdev /tmp/netdev\n\
 sleep 0.5\n\
 \n\
