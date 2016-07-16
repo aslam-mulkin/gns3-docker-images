@@ -1,0 +1,4 @@
+apk --update add gcc musl-dev
+gcc -s -static -Wall -O2 -o nodnsd nodnsd.c
+apk del gcc musl-dev
+rm -rf /var/cache/apk/*
