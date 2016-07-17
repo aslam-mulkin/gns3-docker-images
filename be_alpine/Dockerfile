@@ -2,11 +2,10 @@
 
 FROM alpine
 
-ADD [ "https://github.com/Yelp/dumb-init/releases/download/v1.1.1/dumb-init_1.1.1_amd64", "https://github.com/ehlers/nodnsd/releases/download/v0.1/nodnsd_0.1_amd64", "/usr/local/sbin/" ]
+ADD https://github.com/Yelp/dumb-init/releases/download/v1.1.1/dumb-init_1.1.1_amd64 /usr/local/sbin/dumb-init
+ADD https://github.com/ehlers/nodnsd/releases/download/v0.1/nodnsd_0.1_amd64 /usr/local/sbin/nodnsd
 
 RUN set -ex \
-    && mv /usr/local/sbin/dumb-init* /usr/local/sbin/dumb-init \
-    && mv /usr/local/sbin/nodnsd* /usr/local/sbin/nodnsd \
     && chmod 755 /usr/local/sbin/* \
     && echo -e '\
 \x23!/bin/sh\n\
