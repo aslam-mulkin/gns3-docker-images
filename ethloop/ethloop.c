@@ -1,121 +1,150 @@
 /*
  * ethloop loops back all received frames.
+ *
+ * ethloop is the virtual equivalence of a RJ45 loopback plug.
+ * It's main objective is to see, how a network behaves with a
+ * loop in it's topology.
+ *
+ * This program is put into the public domain, use it as you like.
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <pcap.h>
 
-pcap_t *pcap = NULL;
+pcap_t *pcap = NULL;		/* pcap handle */
 
-void print_pcap_err(char *prefix, int err) {
-  switch(err) {
-    case 0:
-      break;
-    case PCAP_ERROR:
-      fprintf(stderr, "%s: pcap error %s\n", prefix, pcap_geterr(pcap));
-      break;
-    case PCAP_ERROR_BREAK:
-      fprintf(stderr, "%s: pcap_loop terminated by pcap_break\n", prefix);
-      break;
-    case PCAP_ERROR_NOT_ACTIVATED:
-      fprintf(stderr, "%s: pcap not activated\n", prefix);
-      break;
-    case PCAP_ERROR_ACTIVATED:
-      fprintf(stderr, "%s: pcap is already activated\n", prefix);
-      break;
-    case PCAP_ERROR_NO_SUCH_DEVICE:
-      fprintf(stderr, "%s: no such device\n", prefix);
-      break;
-    case PCAP_ERROR_RFMON_NOTSUP:
-      fprintf(stderr, "%s: rfmon mode not supported\n", prefix);
-      break;
-    case PCAP_ERROR_NOT_RFMON:
-      fprintf(stderr, "%s: rfmon mode not activated\n", prefix);
-      break;
-    case PCAP_ERROR_PERM_DENIED:
-      fprintf(stderr, "%s: permission denied\n", prefix);
-      break;
-    case PCAP_ERROR_IFACE_NOT_UP:
-      fprintf(stderr, "%s: interface isn't up\n", prefix);
-      break;
-    case PCAP_ERROR_CANTSET_TSTAMP_TYPE:
-      fprintf(stderr, "%s: device can't set the time stamp type\n", prefix);
-      break;
-    case PCAP_ERROR_PROMISC_PERM_DENIED:
-      fprintf(stderr, "%s: no permission to capture in promiscuous mode\n", prefix);
-      break;
-    case PCAP_ERROR_TSTAMP_PRECISION_NOTSUP:
-      fprintf(stderr, "%s: requested time stamp precision not supported\n", prefix);
-      break;
-    case PCAP_WARNING:
-      fprintf(stderr, "%s: pcap warning %s\n", prefix, pcap_geterr(pcap));
-      break;
-    case PCAP_WARNING_PROMISC_NOTSUP:
-      fprintf(stderr, "%s: warning: promiscuous mode not supported\n", prefix);
-      break;
-    case PCAP_WARNING_TSTAMP_TYPE_NOTSUP:
-      fprintf(stderr, "%s: warning: requested time stamp type not supported\n", prefix);
-      break;
-    default:
-      if (err > 0)
-        fprintf(stderr, "%s: unknown warning, err = %d\n", prefix, err);
-      else
-        fprintf(stderr, "%s: unknown error, err = %d\n", prefix, err);
-      break;
-  }
+/* print pcap error/warning and exit on error */
+void handle_pcap_err(char *prefix, int err) {
+    char *msg = NULL;
 
-  if (err < 0) exit(1);
+    switch(err) {
+        case 0:			/* no error */
+            break;
+        case PCAP_ERROR:
+            fprintf(stderr, "%s: error: %s\n", prefix, pcap_geterr(pcap));
+            break;
+        case PCAP_ERROR_BREAK:
+            msg = "pcap_loop terminated by pcap_break";
+            break;
+        case PCAP_ERROR_NOT_ACTIVATED:
+            msg = "pcap not activated";
+            break;
+        case PCAP_ERROR_ACTIVATED:
+            msg = "pcap is already activated";
+            break;
+        case PCAP_ERROR_NO_SUCH_DEVICE:
+            msg = "no such device";
+            break;
+        case PCAP_ERROR_RFMON_NOTSUP:
+            msg = "rfmon mode not supported";
+            break;
+        case PCAP_ERROR_NOT_RFMON:
+            msg = "rfmon mode not activated";
+            break;
+        case PCAP_ERROR_PERM_DENIED:
+            msg = "permission denied";
+            break;
+        case PCAP_ERROR_IFACE_NOT_UP:
+            msg = "interface isn't up";
+            break;
+        case PCAP_ERROR_CANTSET_TSTAMP_TYPE:
+            msg = "device can't set the time stamp type";
+            break;
+        case PCAP_ERROR_PROMISC_PERM_DENIED:
+            msg = "no permission to capture in promiscuous mode";
+            break;
+        case PCAP_ERROR_TSTAMP_PRECISION_NOTSUP:
+            msg = "requested time stamp precision not supported";
+            break;
+        case PCAP_WARNING:
+            fprintf(stderr, "%s: warning: %s\n", prefix, pcap_geterr(pcap));
+            break;
+        case PCAP_WARNING_PROMISC_NOTSUP:
+            msg = "warning: promiscuous mode not supported";
+            break;
+        case PCAP_WARNING_TSTAMP_TYPE_NOTSUP:
+            msg = "warning: requested time stamp type not supported";
+            break;
+        default:
+            if (err > 0)
+                fprintf(stderr, "%s: unknown warning, err = %d\n", prefix, err);
+            else
+                fprintf(stderr, "%s: unknown error, err = %d\n", prefix, err);
+            break;
+    }
+
+    if (msg != NULL)
+        fprintf(stderr, "%s: %s\n", prefix, msg);
+    if (err < 0)
+        exit(1);
 }
 
-void terminate_pcap_loop(int signum) {
-  if (pcap != NULL) pcap_breakloop(pcap);
+/* break pcap loop by a signal */
+void break_pcap_loop(int signum) {
+    if (pcap != NULL) pcap_breakloop(pcap);
 }
 
+/* print packet counter */
 void print_counter(int counter) {
-  printf("\r%6d", counter); fflush(stdout);
+    printf("\r%6d", counter); fflush(stdout);
 }
 
+/* callback on received packet */
 void echo_packet(u_char *user, const struct pcap_pkthdr *pkthdr,
                  const u_char *packet) {
-  static int counter = 0;
-  int ret;
+    static int counter = 0;
+    int ret;
 
-  ret = pcap_inject(pcap, packet, pkthdr->len);
-  if (ret < 0) print_pcap_err("pcap_inject", ret);
-  print_counter(++counter);
+    ret = pcap_inject(pcap, packet, pkthdr->len);
+    if (ret < 0) {
+        printf("\n");
+        handle_pcap_err("pcap_inject", ret);
+        }
+    print_counter(++counter);
 }
 
 int main(int argc, char *argv[]) {
-  char errbuf[PCAP_ERRBUF_SIZE];
-  int ret;
+    char errbuf[PCAP_ERRBUF_SIZE];
+    sig_t old_sighup, old_sigint, old_sigquit;
+    char *device;
+    int ret;
 
-  if (argc != 2) {
-    fprintf(stderr, "ethloop loops back all received frames.\n\n"
-                    "Usage: ethloop <network device>\n");
-    exit(1);
-  }
+    /* first (and only) argument is device name */
+    if (argc != 2 || argv[1][0] == '-') {
+        fprintf(stderr, "ethloop loops back all received frames.\n\n"
+                        "Usage: ethloop <network device>\n");
+        exit(1);
+    }
+    device = argv[1];
 
-  if ((pcap = pcap_create(argv[1], errbuf)) == NULL) {
-    fprintf(stderr, "pcap_create: can't open network device: %s\n", errbuf);
-    exit(1);
-  }
+    /* open capture device */
+    if ((pcap = pcap_create(device, errbuf)) == NULL) {
+        fprintf(stderr, "pcap_create: can't open network device: %s\n", errbuf);
+        exit(1);
+    }
 
-  print_pcap_err("pcap_set_snaplen", pcap_set_snaplen(pcap, 65535));
-  print_pcap_err("pcap_set_promisc", pcap_set_promisc(pcap, 1));
+    /* set capture options */
+    handle_pcap_err("pcap_set_snaplen", pcap_set_snaplen(pcap, 65535));
+    handle_pcap_err("pcap_set_promisc", pcap_set_promisc(pcap, 1));
 
-  print_pcap_err("pcap_activate", pcap_activate(pcap));
-  print_pcap_err("pcap_setdirection", pcap_setdirection(pcap, PCAP_D_IN));
+    /* activate capture */
+    handle_pcap_err("pcap_activate", pcap_activate(pcap));
+    handle_pcap_err("pcap_setdirection", pcap_setdirection(pcap, PCAP_D_IN));
 
-  print_counter(0);
-  signal(SIGHUP, terminate_pcap_loop);
-  signal(SIGINT, terminate_pcap_loop);
-  ret = pcap_loop(pcap, -1, echo_packet, NULL);
-  if (ret != PCAP_ERROR_BREAK) print_pcap_err("pcap_loop", ret);
-  signal(SIGHUP, SIG_DFL);
-  signal(SIGINT, SIG_DFL);
-  printf("\n");
+    /* receive packets until HUP, INT or QUIT signal */
+    old_sighup  = signal(SIGHUP,  break_pcap_loop);
+    old_sigint  = signal(SIGINT,  break_pcap_loop);
+    old_sigquit = signal(SIGQUIT, break_pcap_loop);
+    print_counter(0);
+    ret = pcap_loop(pcap, -1, echo_packet, NULL);
+    printf("\n");
+    if (ret != PCAP_ERROR_BREAK)
+        handle_pcap_err("pcap_loop", ret);
+    signal(SIGHUP,  old_sighup);
+    signal(SIGINT,  old_sigint);
+    signal(SIGQUIT, old_sigquit);
 
-  pcap_close(pcap);
-  return 0;
+    pcap_close(pcap);
+    return 0;
 }
