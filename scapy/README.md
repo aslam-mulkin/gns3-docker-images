@@ -2,6 +2,7 @@
 
 This image adds scapy, a python program that enables the user
 to send, sniff and dissect and forge network packets.
+For further information see http://scapy.readthedocs.io/en/latest/
 
 This appliance contains the following networking tools:
 
