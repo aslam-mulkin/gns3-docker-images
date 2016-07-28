@@ -100,13 +100,13 @@ void echo_packet(u_char *user, const struct pcap_pkthdr *pkthdr,
     if (ret < 0) {
         printf("\n");
         handle_pcap_err("pcap_inject", ret);
-        }
+    }
     print_counter(++counter);
 }
 
 int main(int argc, char *argv[]) {
     char errbuf[PCAP_ERRBUF_SIZE];
-    sig_t old_sighup, old_sigint, old_sigquit;
+    sig_t old_sighup, old_sigint, old_sigquit, old_sigterm;
     char *device;
     int ret;
 
@@ -132,10 +132,11 @@ int main(int argc, char *argv[]) {
     handle_pcap_err("pcap_activate", pcap_activate(pcap));
     handle_pcap_err("pcap_setdirection", pcap_setdirection(pcap, PCAP_D_IN));
 
-    /* receive packets until HUP, INT or QUIT signal */
+    /* receive packets until HUP, INT, QUIT or TERM signal */
     old_sighup  = signal(SIGHUP,  break_pcap_loop);
     old_sigint  = signal(SIGINT,  break_pcap_loop);
     old_sigquit = signal(SIGQUIT, break_pcap_loop);
+    old_sigterm = signal(SIGTERM, break_pcap_loop);
     print_counter(0);
     ret = pcap_loop(pcap, -1, echo_packet, NULL);
     printf("\n");
@@ -144,6 +145,7 @@ int main(int argc, char *argv[]) {
     signal(SIGHUP,  old_sighup);
     signal(SIGINT,  old_sigint);
     signal(SIGQUIT, old_sigquit);
+    signal(SIGTERM, old_sigterm);
 
     pcap_close(pcap);
     return 0;

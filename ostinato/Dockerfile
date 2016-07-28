@@ -2,27 +2,28 @@
 
 FROM debian:jessie
 
-# ostinato repository key
-ADD http://download.opensuse.org/repositories/home:pstavirs:ostinato/Debian_8.0/Release.key /tmp/ostinato_repository.key
-
-# minimal init, see https://github.com/Yelp/dumb-init
-ADD https://github.com/Yelp/dumb-init/releases/download/v1.1.1/dumb-init_1.1.1_amd64 /usr/local/sbin/dumb-init
-
 RUN set -ex \
-    && chmod 755 /usr/local/sbin/dumb-init \
-#
-# add ostinato repository
-#
-    && apt-key add /tmp/ostinato_repository.key \
-    && echo 'deb http://download.opensuse.org/repositories/home:/pstavirs:/ostinato/Debian_8.0/ /' > /etc/apt/sources.list.d/ostinato.list \
-    && apt-get update \
 #
 # install ostinato
 #
+    && echo 'deb [trusted=yes] http://download.opensuse.org/repositories/home:/pstavirs:/ostinato/Debian_8.0/ /' > /etc/apt/sources.list.d/ostinato.list \
+    && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
         net-tools tcpdump telnet traceroute nano vim-tiny \
         ostinato lxterminal jwm menu leafpad \
+#
+# install tini from alpine/tini-static
+#
+    && apt-get -y install busybox \
+    && cd /usr/local \
+    && busybox wget -q -O - http://dl-cdn.alpinelinux.org/alpine/v3.4/community/x86_64/tini-static-0.9.0-r1.apk | tar xfz - sbin/tini-static \
+    && mv sbin/tini-static sbin/tini \
+    && cd - \
+    && apt-get -y purge busybox \
     && rm -rf /var/lib/apt/lists/* \
+#
+# customize jwm menu
+#
     && /bin/echo -e '\
 ?package(ostinato):\\\n\
  needs="x11"\\\n\
@@ -33,6 +34,9 @@ RUN set -ex \
     && echo "postrun="\""sed -i '/^    </ d' debian-menu"\" >> /etc/menu-methods/jwm \
     && sed -i 's/\(Desktops width\)="[0-9]*"/\1="2"/' /etc/jwm/system.jwmrc \
     && update-menus \
+#
+# configure ostinato drone
+#
     && mkdir -p /root/.config/Ostinato \
     && /bin/echo -e '\
 [General]\n\
@@ -40,15 +44,21 @@ RateAccuracy=Low\n\
 [PortList]\n\
 Include=eth*' \
         > /root/.config/Ostinato/drone.ini \
+#
+# set lxterminal defaults
+#
     && mkdir -p /root/.config/lxterminal \
     && /bin/echo -e '\
 [general]\n\
 scrollback=1000\n\
 fgcolor=#ffffff' \
         > /root/.config/lxterminal/lxterminal.conf \
+#
+# startup script
+#
     && /bin/echo -e '\
 \x23!/bin/sh\n\
-[ $$ -eq 1 ] && exec dumb-init "$0" "$@"\n\
+[ $$ -eq 1 ] && exec tini -- "$0" "$@"\n\
 \n\
 \x23 on unconfigured interfaces disable IPv6, set MTU to 9000\n\
 sed -n '\''s/^ *\\(eth[0-9]*\\):.*/\\1/p'\'' /proc/net/dev | sort > /tmp/netdev\n\

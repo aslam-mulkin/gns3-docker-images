@@ -1,16 +1,26 @@
 FROM debian:jessie
 
-# minimal init, see https://github.com/Yelp/dumb-init
-ADD https://github.com/Yelp/dumb-init/releases/download/v1.1.1/dumb-init_1.1.1_amd64 /usr/local/sbin/dumb-init
-
 RUN set -ex \
-    && chmod 755 /usr/local/sbin/dumb-init \
+#
+# install ftp and tftp server
+#
     && apt-get update \
     && echo 'proftpd-basic shared/proftpd/inetd_or_standalone string standalone' | debconf-set-selections \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
         proftpd-basic tftpd-hpa \
+#
+# install tini from alpine/tini-static
+#
+    && apt-get -y install busybox \
+    && cd /usr/local \
+    && busybox wget -q -O - http://dl-cdn.alpinelinux.org/alpine/v3.4/community/x86_64/tini-static-0.9.0-r1.apk | tar xfz - sbin/tini-static \
+    && mv sbin/tini-static sbin/tini \
+    && cd - \
+    && apt-get -y purge busybox \
     && rm -rf /var/lib/apt/lists/* \
-\
+#
+# setup ftp, tftp
+#
     && addgroup --system ftp \
     && usermod -d /ftp -g ftp ftp \
     && /bin/echo -e '\
@@ -44,14 +54,16 @@ TFTP_DIRECTORY="/ftp"\n\
 TFTP_ADDRESS=":69"\n\
 TFTP_OPTIONS="--secure --permissive --create --umask 022"' \
         > /etc/default/tftpd-hpa \
-\
+#
+# startup script
+#
     && /bin/echo -e '\
 \x23!/bin/sh\n\
-[ $$ -eq 1 ] && exec dumb-init "$0" "$@"\n\
+[ $$ -eq 1 ] && exec tini -- "$0" "$@"\n\
 \n\
 \x23 try to set ftp to same user/group id as GNS3 process\n\
 \x23 /etc/network/interfaces is managed by GNS3\n\
-uid=`stat -c %u /etc/network/interfaces`\n\
+uid=`stat -c %u /etc/network/interfaces 2> /dev/null`\n\
 if [ 0$uid -ne 0 ]; then\n\
 	gid=`stat -c %g /etc/network/interfaces`\n\
 	usermod -o -u $uid ftp\n\
