@@ -61,6 +61,15 @@ TFTP_OPTIONS="--secure --permissive --create --umask 022"' \
 \x23!/bin/sh\n\
 [ $$ -eq 1 ] && exec tini -- "$0" "$@"\n\
 \n\
+\x23 Function to stop services\n\
+stop_services () {\n\
+	trap - EXIT HUP INT QUIT TERM\n\
+	echo\n\
+	service proftpd stop\n\
+	service tftpd-hpa stop\n\
+	exit 0\n\
+}\n\
+\n\
 \x23 try to set ftp to same user/group id as GNS3 process\n\
 \x23 /etc/network/interfaces is managed by GNS3\n\
 uid=`stat -c %u /etc/network/interfaces 2> /dev/null`\n\
@@ -78,7 +87,10 @@ chmod 775 /ftp\n\
 \x23 start ftp and tftp services\n\
 service proftpd start\n\
 service tftpd-hpa start\n\
-tail -F /var/log/proftpd/proftpd.log' \
+trap stop_services EXIT HUP INT QUIT TERM\n\
+\n\
+tail -F /var/log/proftpd/proftpd.log &\n\
+wait $!' \
         > /etc/init.sh && chmod +x /etc/init.sh
 
 VOLUME [ "/ftp" ]
