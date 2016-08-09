@@ -14,12 +14,12 @@ RUN set -ex \
 #
 # install tini from alpine/tini-static
 #
-    && apt-get -y install busybox \
+    && apt-get -y --no-install-recommends install wget \
     && cd /usr/local \
-    && busybox wget -q -O - http://dl-cdn.alpinelinux.org/alpine/v3.4/community/x86_64/tini-static-0.9.0-r1.apk | tar xfz - sbin/tini-static \
+    && wget -q -O - http://dl-cdn.alpinelinux.org/alpine/v3.4/community/x86_64/tini-static-0.9.0-r1.apk | tar xfz - sbin/tini-static \
     && mv sbin/tini-static sbin/tini \
     && cd - \
-    && apt-get -y purge busybox \
+    && apt-get -y --purge autoremove wget \
     && rm -rf /var/lib/apt/lists/* \
 #
 # customize jwm menu
