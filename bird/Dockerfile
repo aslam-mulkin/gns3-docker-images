@@ -5,7 +5,7 @@ FROM debian:jessie
 RUN set -ex \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        bird nano vim-tiny \
+        bird net-tools telnet traceroute nano vim-tiny \
     && rm -rf /var/lib/apt/lists/* \
     && mv /etc/bird/bird.conf /etc/bird/bird.conf.example \
     && mv /etc/bird/bird6.conf /etc/bird/bird6.conf.example \
