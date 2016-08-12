@@ -5,7 +5,7 @@ developed by Cisco and released as an open standard beginning in 1993.
 Although derived from TACACS, TACACS+ is a separate protocol that handles
 authentication, authorization, and accounting (AAA) services.
 
-This `tac_plus` server is a major rewrite of the original Cisco source code.
+The `tac_plus` server is a major rewrite of the original Cisco source code.
 
 For more information see http://www.shrubbery.net/tac_plus/,
 a reference manual for the configuration file is available at
