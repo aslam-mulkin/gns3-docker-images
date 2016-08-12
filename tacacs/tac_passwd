@@ -1,0 +1,171 @@
+#!/usr/bin/python
+#
+# passwd / adduser / deluser utility for tacacs password file
+#
+import os
+import sys
+import crypt
+import getpass
+import random
+
+PASSWD_FILE = "/etc/tacacs+/passwd"
+
+app = os.path.basename(sys.argv[0])
+
+
+# get_enc_passwd - get encrypted password
+def get_enc_passwd():
+    passwd = getpass.getpass('Enter new password: ')
+    verify = getpass.getpass('Retype new password: ')
+    if passwd != verify:
+        sys.stderr.write('{}: sorry, passwords do not match\n'.format(app))
+        sys.exit(1)
+    if passwd == '':
+        sys.stderr.write('{}: sorry, password is empty\n'.format(app))
+        sys.exit(1)
+
+    salt_chars = 'abcdefghijklmnopqrstuvwxyz' \
+                 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' \
+                 '0123456789' './'
+    salt = '$6$' + ''.join(random.choice(salt_chars) for i in range(16)) + '$'
+    enc_passwd = crypt.crypt(passwd, salt)
+
+    # if glibc salt style is not supported, fallback to DES
+    if enc_passwd[2] != '$':
+        enc_passwd = crypt.crypt(passwd, salt[3:5])
+
+    return enc_passwd
+
+
+# tac_passwd - set new password
+def tac_passwd():
+    if len(sys.argv) != 2:
+        sys.stderr.write("Usage: {} <user>\n".format(app))
+        return 2
+    user = sys.argv[1]
+
+    passwd = get_enc_passwd()
+
+    # open passwd file
+    try:
+        f = open(PASSWD_FILE, "a+")
+    except (IOError, OSError) as err:
+        sys.stderr.write("{}: can't open {}: {}\n".format(app, PASSWD_FILE, err))
+        return 1
+
+    # read passwd file
+    f.seek(0, 0)
+    lines = f.readlines()
+    found = 0
+    for idx, line in enumerate(lines):
+        l_user, l_passwd, remain = line.split(':', 2)
+        if user == l_user:
+            found = 1
+            lines[idx] = ':'.join((user, passwd, remain))
+            break
+
+    if not found:
+        sys.stderr.write("{}: user '{}' does not exist\n".format(app, user))
+        f.close()
+        return 1
+
+    # save passwd file
+    f.seek(0, 0)
+    f.truncate()
+    f.writelines(lines)
+    f.close()
+
+    return 0
+
+
+# tac_adduser - add new user
+def tac_adduser():
+    if len(sys.argv) != 2:
+        sys.stderr.write("Usage: {} <user>\n".format(app))
+        return 2
+    user = sys.argv[1]
+
+    passwd = get_enc_passwd()
+
+    # open passwd file
+    try:
+        f = open(PASSWD_FILE, "a+")
+    except (IOError, OSError) as err:
+        sys.stderr.write("{}: can't open {}: {}\n".format(app, PASSWD_FILE, err))
+        return 1
+
+    # read passwd file
+    f.seek(0, 0)
+    lines = f.readlines()
+    uid_max = 999
+    for line in lines:
+        l_user, l_passwd, l_uid, remain = line.split(':', 3)
+        if user == l_user:
+            sys.stderr.write("{}: user '{}' already exists\n".format(app, user))
+            f.close()
+            return 1
+        uid = int(l_uid)
+        if uid_max < uid:
+            uid_max = uid
+
+    # save passwd file
+    f.seek(0, 2)
+    f.write(':'.join((user, passwd, str(uid_max+1), str(100), '', '/home/'+user, '/bin/sh')) + "\n")
+    f.close()
+
+    return 0
+
+
+# tac_deluser - delete user
+def tac_deluser():
+    if len(sys.argv) != 2:
+        sys.stderr.write("Usage: {} <user>\n".format(app))
+        return 2
+    user = sys.argv[1]
+
+    # open passwd file
+    try:
+        f = open(PASSWD_FILE, "a+")
+    except (IOError, OSError) as err:
+        sys.stderr.write("{}: can't open {}: {}\n".format(app, PASSWD_FILE, err))
+        return 1
+
+    # read passwd file
+    f.seek(0, 0)
+    lines = f.readlines()
+    found = 0
+    for idx, line in enumerate(lines):
+        l_user, remain = line.split(':', 1)
+        if user == l_user:
+            found = 1
+            lines[idx] = ''
+            break
+
+    if not found:
+        sys.stderr.write("{}: user '{}' does not exist\n".format(app, user))
+        f.close()
+        return 1
+
+    # save passwd file
+    f.seek(0, 0)
+    f.truncate()
+    f.writelines(lines)
+    f.close()
+
+    return 0
+
+
+# main
+app_functions = {
+     'tac_passwd':  tac_passwd,
+     'tac_adduser': tac_adduser,
+     'tac_deluser': tac_deluser
+}
+
+status = 0
+if app in app_functions:
+    status = app_functions[app]()
+else:
+    sys.stderr.write("{}: command not found\n".format(app))
+    status = 1
+sys.exit(status)
