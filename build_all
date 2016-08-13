@@ -8,10 +8,11 @@ set -e
 DOCKER_BUILD_OPTIONS="--force-rm"
 
 last_image=`docker images -q | head -n1`
+
 echo
 echo "*** ipterm"
 echo
-docker build $DOCKER_BUILD_OPTIONS -t gns3/ipterm_base ipterm/base
+docker build $DOCKER_BUILD_OPTIONS -t gns3/ipterm-base ipterm/base
 docker build $DOCKER_BUILD_OPTIONS -t gns3/ipterm ipterm/cli
 docker build $DOCKER_BUILD_OPTIONS -t gns3/webterm ipterm/web
 
