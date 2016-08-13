@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+# build all docker images in this repository
+#
+
+set -e
+
+DOCKER_BUILD_OPTIONS="--force-rm"
+
+last_image=`docker images -q | head -n1`
+echo
+echo "*** ipterm"
+echo
+docker build $DOCKER_BUILD_OPTIONS -t gns3/ipterm_base ipterm/base
+docker build $DOCKER_BUILD_OPTIONS -t gns3/ipterm ipterm/cli
+docker build $DOCKER_BUILD_OPTIONS -t gns3/webterm ipterm/web
+
+for dockerfile in */Dockerfile; do
+	dir=`dirname $dockerfile`
+	tag=`echo $dir | sed 's/\+/\//'`
+	echo
+	echo "*** $tag"
+	echo
+	docker build $DOCKER_BUILD_OPTIONS -t $tag $dir
+done
+
+[ -n "$last_image" ] && filter="--filter since=$last_image" || filter=""
+new_images=`docker images $filter --format '{{.Repository}}:{{.Tag}}' | sort`
+
+dangling=`docker images -f "dangling=true" -q`
+if [ -n "$dangling" ]; then
+	echo
+	echo "*** Removing dangling images..."
+	docker rmi $dangling
+fi
+
+echo
+echo "*** New images:"
+if [ -n "$new_images" ]; then
+	echo $new_images | tr ' ' '\n'
+else
+	echo '--- None ---'
+fi
