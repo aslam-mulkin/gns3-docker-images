@@ -33,8 +33,8 @@ RUN set -ex \
 #
     && cd /usr/local \
     && repository="http://dl-cdn.alpinelinux.org/alpine/latest-stable/community/x86_64" \
-    && package=`curl -s -S -L $repository/ | sed -n 's/^.*\(tini-static.*\.apk\).*/\1/p'` \
+    && package=`curl -s -S -L $repository/ | sed -n 's/^.*href="\(tini-static[^"]*\).*/\1/p'` \
     && if [ -z "$package" ]; then echo "tini not found" >&2; exit 1; fi \
-    && curl -s -S -L $repository/$package | tar xfz - sbin/tini-static \
+    && curl -s -S -L $repository/$package | tar xfz - --warning=no-unknown-keyword sbin/tini-static \
     && mv sbin/tini-static sbin/tini \
     && cd -

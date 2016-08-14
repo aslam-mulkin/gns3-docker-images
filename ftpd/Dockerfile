@@ -14,9 +14,9 @@ RUN set -ex \
     && apt-get -y --no-install-recommends install wget \
     && cd /usr/local \
     && repository="http://dl-cdn.alpinelinux.org/alpine/latest-stable/community/x86_64" \
-    && package=`wget -q -O - $repository/ | sed -n 's/^.*\(tini-static.*\.apk\).*/\1/p'` \
+    && package=`wget -q -O - $repository/ | sed -n 's/^.*href="\(tini-static[^"]*\).*/\1/p'` \
     && if [ -z "$package" ]; then echo "tini not found" >&2; exit 1; fi \
-    && wget -q -O - $repository/$package | tar xfz - sbin/tini-static \
+    && wget -q -O - $repository/$package | tar xfz - --warning=no-unknown-keyword sbin/tini-static \
     && mv sbin/tini-static sbin/tini \
     && cd - \
     && apt-get -y --purge autoremove wget \
