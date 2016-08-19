@@ -10,16 +10,14 @@ RUN set -ex \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
         tacacs+ net-tools telnet traceroute nano vim-tiny \
 #
-# install tini from alpine/tini-static
+# install tini from GitHub repository
 #
+    && repository="https://github.com/krallin/tini" \
     && apt-get -y --no-install-recommends install wget \
-    && cd /usr/local \
-    && repository="http://dl-cdn.alpinelinux.org/alpine/latest-stable/community/x86_64" \
-    && package=`wget -q -O - $repository/ | sed -n 's/^.*href="\(tini-static[^"]*\).*/\1/p'` \
-    && if [ -z "$package" ]; then echo "tini not found" >&2; exit 1; fi \
-    && wget -q -O - $repository/$package | tar xfz - --warning=no-unknown-keyword sbin/tini-static \
-    && mv sbin/tini-static sbin/tini \
-    && cd - \
+    && version=`wget --no-check-certificate --max-redirect=0 -O - $repository/releases/latest 2>&1 | sed -n 's/^Location.*\/tag\/\([a-zA-Z0-9._-]*\).*/\1/p'` \
+    && if [ -z "$version" ]; then echo "tini not found" >&2; exit 1; fi \
+    && wget -q --no-check-certificate -O /usr/local/sbin/tini $repository/releases/download/$version/tini \
+    && chmod 755 /usr/local/sbin/tini \
     && apt-get -y --purge autoremove wget \
     && rm -rf /var/lib/apt/lists/* \
 #

@@ -29,12 +29,10 @@ RUN set -ex \
         net-tools tcpdump telnet traceroute curl iperf3 knot-host openssh-client mtr-tiny socat nano vim-tiny \
     && rm -rf /var/lib/apt/lists/* \
 #
-# install tini from alpine/tini-static
+# install tini from GitHub repository
 #
-    && cd /usr/local \
-    && repository="http://dl-cdn.alpinelinux.org/alpine/latest-stable/community/x86_64" \
-    && package=`curl -s -S -L $repository/ | sed -n 's/^.*href="\(tini-static[^"]*\).*/\1/p'` \
-    && if [ -z "$package" ]; then echo "tini not found" >&2; exit 1; fi \
-    && curl -s -S -L $repository/$package | tar xfz - --warning=no-unknown-keyword sbin/tini-static \
-    && mv sbin/tini-static sbin/tini \
-    && cd -
+    && repository="https://github.com/krallin/tini" \
+    && version=`curl -s -S -k $repository/releases/latest | sed -n 's/^.*href="[^"]*\/tag\/\([a-zA-Z0-9._-]*\).*/\1/p'` \
+    && if [ -z "$version" ]; then echo "tini not found" >&2; exit 1; fi \
+    && curl -s -S -L -k -o /usr/local/sbin/tini $repository/releases/download/$version/tini \
+    && chmod 755 /usr/local/sbin/tini
