@@ -14,7 +14,7 @@ RUN set -ex \
 #
     && repository="https://github.com/krallin/tini" \
     && apt-get -y --no-install-recommends install wget \
-    && version=`wget --no-check-certificate --max-redirect=0 -O - $repository/releases/latest 2>&1 | sed -n 's/^Location.*\/tag\/\([a-zA-Z0-9._-]*\).*/\1/p'` \
+    && version=`wget -q --no-check-certificate --max-redirect=0 --server-response -O /dev/null $repository/releases/latest 2>&1 | sed -n 's/^ *Location:.*\/tag\/\([a-zA-Z0-9._-]*\).*/\1/p'` \
     && if [ -z "$version" ]; then echo "tini not found" >&2; exit 1; fi \
     && wget -q --no-check-certificate -O /usr/local/sbin/tini $repository/releases/download/$version/tini \
     && chmod 755 /usr/local/sbin/tini \

@@ -32,7 +32,7 @@ RUN set -ex \
 # install tini from GitHub repository
 #
     && repository="https://github.com/krallin/tini" \
-    && version=`curl -s -S -k $repository/releases/latest | sed -n 's/^.*href="[^"]*\/tag\/\([a-zA-Z0-9._-]*\).*/\1/p'` \
+    && version=`curl -s -S -k -I $repository/releases/latest | sed -n 's/^ *Location:.*\/tag\/\([a-zA-Z0-9._-]*\).*/\1/p'` \
     && if [ -z "$version" ]; then echo "tini not found" >&2; exit 1; fi \
     && curl -s -S -L -k -o /usr/local/sbin/tini $repository/releases/download/$version/tini \
     && chmod 755 /usr/local/sbin/tini
