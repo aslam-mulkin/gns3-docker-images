@@ -38,7 +38,7 @@ fi
 echo
 echo "*** New images:"
 if [ -n "$new_images" ]; then
-	echo $new_images | tr ' ' '\n'
+	echo "$new_images"
 else
 	echo '--- None ---'
 fi
