@@ -1,0 +1,1 @@
+docker run --rm --tty --volume `pwd`:/base debian:jessie sh /base/debian-get_libc-i386

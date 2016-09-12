@@ -1,0 +1,17 @@
+#!/bin/sh
+
+cd /iou
+
+# export configs from NVRAM
+nvram_file=nvram_*
+if [ -f $nvram_file ]; then
+	iou_export $nvram_file startup-config private-config
+	[ -f private-config -a `stat -c "%s" private-config` -le 5 ] && \
+		rm private-config
+	owner=`stat -c "%u:%g" .`
+	[ -f startup-config ] && chown "$owner" startup-config
+	[ -f private-config ] && chown "$owner" private-config
+fi
+
+# don't close, if IOU is not terminated by a signal
+[ "$1" = "1" ] || read -p "Quit... "
