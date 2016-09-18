@@ -6,10 +6,10 @@ MEM=${MEM:-256}
 cd /iou
 
 # disable IPv6 and set MTU to 9000
-for adapter in `sed -n 's/^ *\(eth[0-9]*\):.*/\1/p' /proc/net/dev`; do
-	ifconfig $adapter down
-	sysctl -q -w net.ipv6.conf.$adapter.disable_ipv6=1
-	ifconfig $adapter mtu 9000 up
+for if_eth in `sed -n 's/^ *\(eth[0-9]*\):.*/\1/p' /proc/net/dev`; do
+	ifconfig $if_eth down
+	sysctl -q -w net.ipv6.conf.$if_eth.disable_ipv6=1
+	ifconfig $if_eth mtu 9000 up
 done
 
 # update /etc/hosts
@@ -30,14 +30,19 @@ find nvram_* ! -name $nvram_file | xargs -r rm
 echo -n "" > NETMAP
 echo -e "[default]\nbase_port = 49000\nnetmap = NETMAP\n" > iouyap.ini
 
-num_bays=1
-for adapter in `sed -n 's/^ *eth\([0-9]*\):.*/\1/p' /proc/net/dev`; do
-	interface="$(($adapter / 4))/$(($adapter % 4))"
-	echo "1000:$interface $ID:$interface" >> NETMAP
-	echo -e "[1000:$interface]\neth_dev = eth$adapter\n" >> iouyap.ini
-	bays=$(($adapter / 4 + 1))
-	[ $bays -gt $num_bays ] && num_bays=$bays
+if_last=0
+for if_eth in `sed -n 's/^ *eth\([0-9]*\):.*/\1/p' /proc/net/dev`; do
+	if_iou="$(($if_eth / 4))/$(($if_eth % 4))"
+	echo "1000:$if_iou $ID:$if_iou" >> NETMAP
+	echo -e "[1000:$if_iou]\neth_dev = eth$if_eth\n" >> iouyap.ini
+	[ $if_last -lt $if_eth ] && if_last=$if_eth
 done
+num_eth=$(($if_last / 4 + 1))
+num_ser=0
+if [ $num_eth -gt 2 ]; then
+	num_eth=$(($num_eth - 1))
+	num_ser=1
+fi
 
 # first run: replace %h by hostname in config files
 if [ ! -f $nvram_file ]; then
@@ -55,4 +60,4 @@ fi
 hostname gns3vm
 stty intr undef quit undef susp undef
 iouyap 1000 > iouyap.log 2>&1 &
-exec iou.bin -e $num_bays -s 0 -n "$NVRAM" -m "$MEM" $ID
+exec iou.bin -e $num_eth -s $num_ser -n "$NVRAM" -m "$MEM" $ID
