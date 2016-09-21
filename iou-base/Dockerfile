@@ -24,8 +24,8 @@ RUN set -ex \
 
 ADD libc-i386.tar.gz /
 ADD https://github.com/ehlers/start-stop/releases/download/v0.1/start-stop_0.1_amd64 /usr/local/bin/start-stop
-ADD do-start do-stop /usr/local/bin/
+ADD do-start do-stop /etc/init.d/
 
-RUN cd /usr/local/bin; chmod 755 start-stop do-start do-stop
+RUN chmod 755 /usr/local/bin/start-stop /etc/init.d/do-start /etc/init.d/do-stop
 
-CMD [ "start-stop" ]
+CMD [ "start-stop", "/etc/init.d/do-start", "/etc/init.d/do-stop" ]

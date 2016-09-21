@@ -24,7 +24,7 @@ ID=`echo $ID | grep -o '[0-9-]*$'`
 ID=$(($ID % 997))
 [ $ID -le 0 ] && ID=$(($ID + 997))
 nvram_file=`printf "nvram_%05d" $ID`
-find nvram_* ! -name $nvram_file | xargs -r rm
+find nvram_* ! -name $nvram_file 2> /dev/null | xargs -r rm
 
 # create NETMAP and iouyap.ini
 echo -n "" > NETMAP
