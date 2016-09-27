@@ -24,6 +24,11 @@ cp -a /lib/i386-linux-gnu/libpthread[-.]* $LIB_DIR/lib/i386-linux-gnu/
 cp -a /usr/lib/i386-linux-gnu/libcrypto[-.]* $LIB_DIR/lib/i386-linux-gnu/
 ln -s libcrypto.so.1.0.0 $LIB_DIR/lib/i386-linux-gnu/libcrypto.so.4
 
+# copy copyright files
+cp -a --parents /usr/share/doc/gcc-4.9-base/copyright $LIB_DIR/
+cp -a --parents /usr/share/doc/libc6/copyright $LIB_DIR/
+cp -a --parents /usr/share/doc/libssl1.0.0/copyright $LIB_DIR/
+
 # store in tar archive
 echo
 echo "Storing i386 libs into libc-i386.tar.gz..."
