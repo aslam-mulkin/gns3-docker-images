@@ -8,10 +8,6 @@ dpkg --add-architecture i386
 apt-get update
 DEBIAN_FRONTEND=noninteractive apt-get -y install libssl1.0.0:i386
 
-# configuration for i386 loader
-mkdir -p $LIB_DIR/etc
-echo "/lib/i386-linux-gnu" > $LIB_DIR/etc/ld.so.conf
-
 # copy i386 libraries
 mkdir -p $LIB_DIR/lib/i386-linux-gnu
 cp -a /lib/ld-linux.so.2 $LIB_DIR/lib/
@@ -24,10 +20,12 @@ cp -a /lib/i386-linux-gnu/libpthread[-.]* $LIB_DIR/lib/i386-linux-gnu/
 cp -a /usr/lib/i386-linux-gnu/libcrypto[-.]* $LIB_DIR/lib/i386-linux-gnu/
 ln -s libcrypto.so.1.0.0 $LIB_DIR/lib/i386-linux-gnu/libcrypto.so.4
 
-# copy copyright files
-cp -a --parents /usr/share/doc/gcc-4.9-base/copyright $LIB_DIR/
-cp -a --parents /usr/share/doc/libc6/copyright $LIB_DIR/
-cp -a --parents /usr/share/doc/libssl1.0.0/copyright $LIB_DIR/
+# include copyright files
+DOC_DIR=$LIB_DIR/usr/share/doc/libc-i386
+for pkg in gcc-4.9-base libc6 libssl1.0.0; do
+	mkdir -p $DOC_DIR/$pkg
+	cp -a /usr/share/doc/$pkg/copyright $DOC_DIR/$pkg/
+done
 
 # store in tar archive
 echo
