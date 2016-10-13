@@ -23,9 +23,9 @@ RUN set -ex \
     && rm -rf /var/cache/apk/*
 
 ADD libc-i386.tar.gz /
-ADD https://github.com/ehlers/start-stop/releases/download/v0.1/start-stop_0.1_amd64 /usr/local/bin/start-stop
+ADD https://github.com/ehlers/start-stop/releases/download/v0.2/start-stop_0.2_amd64 /usr/local/bin/start-stop
 ADD do-start do-stop /etc/init.d/
 
 RUN chmod 755 /usr/local/bin/start-stop /etc/init.d/do-start /etc/init.d/do-stop
 
-CMD [ "start-stop", "/etc/init.d/do-start", "/etc/init.d/do-stop" ]
+CMD [ "start-stop", "/etc/init.d/do-start", "---", "/etc/init.d/do-stop" ]

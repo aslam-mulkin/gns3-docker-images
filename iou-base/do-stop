@@ -14,7 +14,7 @@ if [ -f $nvram_file ]; then
 fi
 
 # don't close, if IOU is not terminated by a signal
-if [ "$1" != "1" ]; then
+if [ "$START_CMD_KILLED" != "1" ]; then
 	echo
 	read -p "Quit... "
 fi
