@@ -12,7 +12,7 @@ RUN set -ex \
         snmp snmp-mibs-downloader libqtgui4 lxterminal jwm menu leafpad \
     && rm -rf /var/lib/apt/lists/* \
     && sed -i -e 's/^mibs/#mibs/' /etc/snmp/snmp.conf \
-    && curl -k -L -o qtmib.deb https://sourceforge.net/projects/qtmib/files/qtmib.deb/qtmib_1.1_1_amd64.deb/download \
+    && curl -s -S -L -k -o qtmib.deb https://sourceforge.net/projects/qtmib/files/qtmib.deb/qtmib_1.1_1_amd64.deb/download \
     && dpkg -i qtmib.deb \
     && rm qtmib.deb \
 #
@@ -42,7 +42,7 @@ fgcolor=#ffffff' \
 #
     && /bin/echo -e '\
 \x23!/bin/sh\n\
-[ $$ -eq 1 ] && exec tini -- "$0" "$@"\n\
+[ $$ -eq 1 ] && exec start-stop -- "$0" "$@"\n\
 \n\
 cd\n\
 export SHELL=/bin/bash\n\

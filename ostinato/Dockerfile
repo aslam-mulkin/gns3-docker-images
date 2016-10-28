@@ -12,14 +12,13 @@ RUN set -ex \
         net-tools tcpdump telnet traceroute nano vim-tiny \
         ostinato lxterminal jwm menu leafpad \
 #
-# install tini from GitHub repository
+# install start-stop from GitHub repository
 #
-    && repository="https://github.com/krallin/tini" \
     && apt-get -y --no-install-recommends install wget \
-    && version=`wget -q --no-check-certificate --max-redirect=0 --server-response -O /dev/null $repository/releases/latest 2>&1 | sed -n 's/^ *Location:.*\/tag\/\([a-zA-Z0-9._-]*\).*/\1/p'` \
-    && if [ -z "$version" ]; then echo "tini not found" >&2; exit 1; fi \
-    && wget -q --no-check-certificate -O /usr/local/sbin/tini $repository/releases/download/$version/tini \
-    && chmod 755 /usr/local/sbin/tini \
+    && url=`wget -q --no-check-certificate -O - https://api.github.com/repos/ehlers/start-stop/releases/latest | sed -n 's/^ *"browser_download_url": "\([^"]*_amd64\)".*/\1/p'` \
+    && if [ -z "$url" ]; then echo "start-stop not found" >&2; exit 1; fi \
+    && wget -q --no-check-certificate -O /usr/local/sbin/start-stop $url \
+    && chmod 755 /usr/local/sbin/start-stop \
     && apt-get -y --purge autoremove wget \
     && rm -rf /var/lib/apt/lists/* \
 #
@@ -59,7 +58,7 @@ fgcolor=#ffffff' \
 #
     && /bin/echo -e '\
 \x23!/bin/sh\n\
-[ $$ -eq 1 ] && exec tini -- "$0" "$@"\n\
+[ $$ -eq 1 ] && exec start-stop -- "$0" "$@"\n\
 \n\
 \x23 on unconfigured interfaces disable IPv6, set MTU to 9000\n\
 sed -n '\''s/^ *\\(eth[0-9]*\\):.*/\\1/p'\'' /proc/net/dev | sort > /tmp/netdev\n\

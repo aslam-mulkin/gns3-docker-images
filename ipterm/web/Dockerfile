@@ -56,7 +56,7 @@ fgcolor=#ffffff' \
 #
     && /bin/echo -e '\
 \x23!/bin/sh\n\
-[ $$ -eq 1 ] && exec tini -- "$0" "$@"\n\
+[ $$ -eq 1 ] && exec start-stop -- "$0" "$@"\n\
 \n\
 cd\n\
 export SHELL=/bin/bash\n\

@@ -9,15 +9,14 @@ RUN set -ex \
 #
     && dpkg-query -f '${binary:Package}\n' -W | sort > base_packages \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        gcc libc6-dev make curl ca-certificates \
-    && curl -OL https://github.com/troglobit/mtools/releases/download/v2.3/mtools-2.3.tar.gz \
-    && tar xfz mtools-2.3.tar.gz \
-    && cd mtools-2.3 \
+        gcc libc6-dev make curl \
+    && curl -s -S -L -k https://github.com/troglobit/mtools/releases/download/v2.3/mtools-2.3.tar.gz | tar xfz - \
+    && cd mtools* \
     && make \
     && make install \
     && mv /usr/local/sbin/mreceive /usr/local/sbin/msend /usr/local/bin/ \
     && cd .. \
-    && rm -r mtools-2.3* \
+    && rm -r mtools* \
     && dpkg-query -f '${binary:Package}\n' -W | sort > packages \
     && DEBIAN_FRONTEND=noninteractive apt-get -y purge \
         `comm -13 base_packages packages` \
@@ -29,10 +28,9 @@ RUN set -ex \
         net-tools tcpdump telnet traceroute curl iperf3 knot-host openssh-client mtr-tiny socat nano vim-tiny \
     && rm -rf /var/lib/apt/lists/* \
 #
-# install tini from GitHub repository
+# install start-stop from GitHub repository
 #
-    && repository="https://github.com/krallin/tini" \
-    && version=`curl -s -S -k -I $repository/releases/latest | sed -n 's/^ *Location:.*\/tag\/\([a-zA-Z0-9._-]*\).*/\1/p'` \
-    && if [ -z "$version" ]; then echo "tini not found" >&2; exit 1; fi \
-    && curl -s -S -L -k -o /usr/local/sbin/tini $repository/releases/download/$version/tini \
-    && chmod 755 /usr/local/sbin/tini
+    && url=`curl -s -S -L -k https://api.github.com/repos/ehlers/start-stop/releases/latest | sed -n 's/^ *"browser_download_url": "\([^"]*_amd64\)".*/\1/p'` \
+    && if [ -z "$url" ]; then echo "start-stop not found" >&2; exit 1; fi \
+    && curl -s -S -L -k -o /usr/local/sbin/start-stop $url \
+    && chmod 755 /usr/local/sbin/start-stop

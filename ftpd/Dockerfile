@@ -9,14 +9,13 @@ RUN set -ex \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
         proftpd-basic tftpd-hpa \
 #
-# install tini from GitHub repository
+# install start-stop from GitHub repository
 #
-    && repository="https://github.com/krallin/tini" \
     && apt-get -y --no-install-recommends install wget \
-    && version=`wget -q --no-check-certificate --max-redirect=0 --server-response -O /dev/null $repository/releases/latest 2>&1 | sed -n 's/^ *Location:.*\/tag\/\([a-zA-Z0-9._-]*\).*/\1/p'` \
-    && if [ -z "$version" ]; then echo "tini not found" >&2; exit 1; fi \
-    && wget -q --no-check-certificate -O /usr/local/sbin/tini $repository/releases/download/$version/tini \
-    && chmod 755 /usr/local/sbin/tini \
+    && url=`wget -q --no-check-certificate -O - https://api.github.com/repos/ehlers/start-stop/releases/latest | sed -n 's/^ *"browser_download_url": "\([^"]*_amd64\)".*/\1/p'` \
+    && if [ -z "$url" ]; then echo "start-stop not found" >&2; exit 1; fi \
+    && wget -q --no-check-certificate -O /usr/local/sbin/start-stop $url \
+    && chmod 755 /usr/local/sbin/start-stop \
     && apt-get -y --purge autoremove wget \
     && rm -rf /var/lib/apt/lists/* \
 #
@@ -60,16 +59,7 @@ TFTP_OPTIONS="--secure --permissive --create --umask 022"' \
 #
     && /bin/echo -e '\
 \x23!/bin/sh\n\
-[ $$ -eq 1 ] && exec tini -- "$0" "$@"\n\
-\n\
-\x23 Function to stop services\n\
-stop_services () {\n\
-	trap - EXIT HUP INT QUIT TERM\n\
-	echo\n\
-	service proftpd stop\n\
-	service tftpd-hpa stop\n\
-	exit 0\n\
-}\n\
+[ $$ -eq 1 ] && exec start-stop -- "$0" "$@"\n\
 \n\
 \x23 try to set ftp to same user/group id as GNS3 process\n\
 \x23 /etc/network/interfaces is managed by GNS3\n\
@@ -88,10 +78,8 @@ chmod 775 /ftp\n\
 \x23 start ftp and tftp services\n\
 service proftpd start\n\
 service tftpd-hpa start\n\
-trap stop_services EXIT HUP INT QUIT TERM\n\
 \n\
-tail -F /var/log/proftpd/proftpd.log &\n\
-wait $!' \
+tail -F /var/log/proftpd/proftpd.log' \
         > /etc/init.sh && chmod +x /etc/init.sh
 
 VOLUME [ "/ftp" ]

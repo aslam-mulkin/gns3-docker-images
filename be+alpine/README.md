@@ -5,5 +5,5 @@ The alpine appliance has two major annoyances:
 - It tries to use localhost for DNS lookup, when no resolver is defined
 
 This appliance fixes that by using two programs:
-- tini, see https://github.com/krallin/tini
+- start-stop, see https://github.com/ehlers/start-stop
 - nodnsd, see https://github.com/ehlers/nodnsd
