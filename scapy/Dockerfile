@@ -10,7 +10,7 @@ RUN set -ex \
 #
 # install scapy
 #
-    && curl -s -S -L -k https://github.com/secdev/scapy/archive/v2.3.2.tar.gz | tar xfz - \
+    && curl -s -S -L https://github.com/secdev/scapy/archive/v2.3.2.tar.gz | tar xfz - \
     && cd scapy* \
     && python setup.py install \
     && cd .. \

@@ -11,12 +11,12 @@ RUN set -ex \
 #
 # install start-stop from GitHub repository
 #
-    && apt-get -y --no-install-recommends install wget \
-    && url=`wget -q --no-check-certificate -O - https://api.github.com/repos/ehlers/start-stop/releases/latest | sed -n 's/^ *"browser_download_url": "\([^"]*_amd64\)".*/\1/p'` \
+    && apt-get -y --no-install-recommends install wget ca-certificates \
+    && url=`wget -q -O - https://api.github.com/repos/ehlers/start-stop/releases/latest | sed -n 's/^ *"browser_download_url": "\([^"]*_amd64\)".*/\1/p'` \
     && if [ -z "$url" ]; then echo "start-stop not found" >&2; exit 1; fi \
-    && wget -q --no-check-certificate -O /usr/local/sbin/start-stop $url \
+    && wget -q -O /usr/local/sbin/start-stop $url \
     && chmod 755 /usr/local/sbin/start-stop \
-    && apt-get -y --purge autoremove wget \
+    && apt-get -y --purge autoremove wget ca-certificates \
     && rm -rf /var/lib/apt/lists/* \
 #
 # setup ftp, tftp

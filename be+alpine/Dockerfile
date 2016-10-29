@@ -6,18 +6,18 @@ RUN set -ex \
 #
 # install start-stop and nodnsd
 #
-    && apk add --update-cache wget libcap \
+    && apk add --update-cache wget ca-certificates libcap \
     && mkdir -p /usr/local/sbin \
     && cd /usr/local/sbin \
-    && url=`wget -q --no-check-certificate -O - https://api.github.com/repos/ehlers/start-stop/releases/latest | sed -n 's/^ *"browser_download_url": "\([^"]*_amd64\)".*/\1/p'` \
+    && url=`wget -q -O - https://api.github.com/repos/ehlers/start-stop/releases/latest | sed -n 's/^ *"browser_download_url": "\([^"]*_amd64\)".*/\1/p'` \
     && if [ -z "$url" ]; then echo "start-stop not found" >&2; exit 1; fi \
-    && wget -q --no-check-certificate -O start-stop $url \
+    && wget -q -O start-stop $url \
     && chmod 755 start-stop \
-    && wget -q --no-check-certificate -O nodnsd https://github.com/ehlers/nodnsd/releases/download/v0.1/nodnsd_0.1_amd64 \
+    && wget -q -O nodnsd https://github.com/ehlers/nodnsd/releases/download/v0.1/nodnsd_0.1_amd64 \
     && chmod 755 nodnsd \
     && setcap cap_net_bind_service=+ep nodnsd \
     && cd - \
-    && apk del wget libcap \
+    && apk del wget ca-certificates libcap \
     && rm -rf /var/cache/apk/* \
 #
 # startup script
