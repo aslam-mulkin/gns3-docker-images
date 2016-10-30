@@ -12,7 +12,7 @@ RUN set -ex \
     && dpkg-query -f '${binary:Package}\n' -W | sort > base_packages \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
         gcc libc6-dev make \
-    && curl -s -S -L https://github.com/troglobit/mtools/releases/download/v2.3/mtools-2.3.tar.gz | tar xfz - \
+    && curl -s -S -L https://github.com/troglobit/mtools/archive/v2.3.tar.gz | tar xfz - \
     && cd mtools* \
     && make \
     && make install \
