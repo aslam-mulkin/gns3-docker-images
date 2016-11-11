@@ -30,9 +30,9 @@ RUN set -ex \
         net-tools tcpdump telnet traceroute iperf3 knot-host openssh-client mtr-tiny socat nano vim-tiny \
     && rm -rf /var/lib/apt/lists/* \
 #
-# install start-stop from GitHub repository
+# install run-stop from GitHub repository
 #
-    && url=`curl -s -S -L https://api.github.com/repos/ehlers/start-stop/releases/latest | sed -n 's/^ *"browser_download_url": "\([^"]*_amd64\)".*/\1/p'` \
-    && if [ -z "$url" ]; then echo "start-stop not found" >&2; exit 1; fi \
-    && curl -s -S -L -o /usr/local/sbin/start-stop $url \
-    && chmod 755 /usr/local/sbin/start-stop
+    && url=`curl -s -S -L https://api.github.com/repos/ehlers/run-stop/releases/latest | sed -n 's/^ *"browser_download_url": "\([^"]*_amd64\)".*/\1/p'` \
+    && if [ -z "$url" ]; then echo "run-stop not found" >&2; exit 1; fi \
+    && curl -s -S -L -o /usr/local/sbin/run-stop $url \
+    && chmod 755 /usr/local/sbin/run-stop
