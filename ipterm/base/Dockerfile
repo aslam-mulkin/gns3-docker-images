@@ -1,6 +1,6 @@
 # docker base image for basic networking tools
 
-FROM debian:jessie
+FROM debian:jessie-slim
 
 RUN set -ex \
     && apt-get update \

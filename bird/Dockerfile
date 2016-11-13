@@ -1,6 +1,6 @@
 # BIRD routing daemon, see http://bird.network.cz
 
-FROM debian:jessie
+FROM debian:jessie-slim
 
 RUN set -ex \
     && apt-get update \
