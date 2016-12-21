@@ -28,8 +28,13 @@ RUN set -ex \
 \n\
 nodnsd\n\
 \n\
-[ $# -gt 0 ] && exec "$@" || exec ash -i' \
+if [ $# -gt 0 ]; then\n\
+	exec "$@"\n\
+else\n\
+	cd; exec ash -i\n\
+fi' \
         > /etc/init.sh && chmod +x /etc/init.sh
 
 ENTRYPOINT [ "/etc/init.sh" ]
 STOPSIGNAL SIGHUP
+VOLUME [ "/root" ]
