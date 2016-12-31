@@ -8,7 +8,7 @@ RUN set -ex \
     && cd /root \
     && apk add --update-cache libpcap \
     && apk add --virtual build-dependencies gcc musl-dev libpcap-dev \
-    && gcc -Wall -O2 -s -lpcap -o /usr/local/bin/ethloop ethloop.c \
+    && gcc -Wall -O2 -s -o /usr/local/bin/ethloop ethloop.c -lpcap \
     && apk del build-dependencies \
     && rm -rf /var/cache/apk/*
 
