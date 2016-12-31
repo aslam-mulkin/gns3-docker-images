@@ -1,15 +1,13 @@
 FROM alpine
 
+### cx_freeze 5.0 is totally broken
+COPY py2-cx_freeze* /tmp
 #
 # install iouyap, (frozen) ioutools and run-stop
 #
 RUN set -ex \
     && dd if=/dev/zero bs=4 count=1 of=/etc/hostid \
-    && echo -e '\
-@edge http://dl-cdn.alpinelinux.org/alpine/edge/main\n\
-@edge http://dl-cdn.alpinelinux.org/alpine/edge/community' \
-        >> /etc/apk/repositories \
-    && apk add --update-cache py2-cx_freeze@edge iouyap@edge wget ca-certificates \
+    && apk add --update-cache /tmp/py2-cx_freeze* iouyap wget ca-certificates \
     && cd /tmp \
     && wget -q https://raw.githubusercontent.com/ehlers/IOUtools/master/iou_import \
     && wget -q https://raw.githubusercontent.com/ehlers/IOUtools/master/iou_export \
