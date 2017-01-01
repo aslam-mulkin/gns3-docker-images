@@ -1,21 +1,28 @@
 FROM alpine
 
-### cx_freeze 5.0 is totally broken
-COPY py2-cx_freeze* /tmp
 #
 # install iouyap, (frozen) ioutools and run-stop
 #
 RUN set -ex \
     && dd if=/dev/zero bs=4 count=1 of=/etc/hostid \
-    && apk add --update-cache /tmp/py2-cx_freeze* iouyap wget ca-certificates \
+    && apk add --update-cache py2-cx_freeze iouyap wget ca-certificates \
     && cd /tmp \
     && wget -q https://raw.githubusercontent.com/ehlers/IOUtools/master/iou_import \
     && wget -q https://raw.githubusercontent.com/ehlers/IOUtools/master/iou_export \
+    && /bin/echo -e '\
+from cx_Freeze import setup, Executable\n\
+setup (\n\
+    options = { "build_exe": { "build_exe": "/usr/local/bin" } },\n\
+    executables = [ Executable("iou_import"), Executable("iou_export") ]\n\
+)' \
+        > setup.py \
     && ln -s `which ldd` ldd \
-    && cxfreeze iou_import --target-dir /usr/local/bin \
-    && cxfreeze iou_export --target-dir /usr/local/bin \
+### Workaround for issue #211 of cx_Freeze v5.0
+    && sed -i 's/if __name__ == ['\''"]__main__['\''"]/if __name__.endswith("__main__")/' iou_import iou_export \
+###
+    && python setup.py build \
     && rm /usr/local/bin/ldd \
-    && rm iou_export iou_import ldd \
+    && rm iou_export iou_import setup.py ldd \
     && cd - \
     && mkdir -p /usr/local/sbin \
     && url=`wget -q -O - https://api.github.com/repos/ehlers/run-stop/releases/latest | sed -n 's/^ *"browser_download_url": "\([^"]*_amd64\)".*/\1/p'` \
