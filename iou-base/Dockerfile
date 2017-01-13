@@ -5,22 +5,22 @@ FROM alpine
 #
 RUN set -ex \
     && dd if=/dev/zero bs=4 count=1 of=/etc/hostid \
-    && apk add --update-cache py2-cx_freeze iouyap wget ca-certificates \
+    && apk add --update-cache py3-cx_freeze iouyap wget ca-certificates \
     && cd /tmp \
     && wget -q https://raw.githubusercontent.com/ehlers/IOUtools/master/iou_import \
     && wget -q https://raw.githubusercontent.com/ehlers/IOUtools/master/iou_export \
     && /bin/echo -e '\
 from cx_Freeze import setup, Executable\n\
 setup (\n\
-    options = { "build_exe": { "build_exe": "/usr/local/bin" } },\n\
+    options = { "build_exe": { "build_exe": "/usr/local/bin", "zip_exclude_packages": None } },\n\
     executables = [ Executable("iou_import"), Executable("iou_export") ]\n\
 )' \
         > setup.py \
     && ln -s `which ldd` ldd \
-### Workaround for issue #211 of cx_Freeze v5.0
+### Workaround for issue #211 of cx_Freeze v5.0, fixed with 5.0.1
     && sed -i 's/if __name__ == ['\''"]__main__['\''"]/if __name__.endswith("__main__")/' iou_import iou_export \
 ###
-    && python setup.py build \
+    && python3 setup.py build \
     && rm /usr/local/bin/ldd \
     && rm iou_export iou_import setup.py ldd \
     && cd - \
@@ -29,7 +29,7 @@ setup (\n\
     && if [ -z "$url" ]; then echo "run-stop not found" >&2; exit 1; fi \
     && wget -q -O /usr/local/sbin/run-stop $url \
     && chmod 755 /usr/local/sbin/run-stop \
-    && apk del py2-cx_freeze wget ca-certificates \
+    && apk del py3-cx_freeze wget ca-certificates \
     && rm -rf /var/cache/apk/*
 
 ADD libc-i386.tar.gz /
