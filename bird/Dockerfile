@@ -14,13 +14,18 @@ RUN set -ex \
 \x23!/bin/sh\n\
 \n\
 \x23 start bird daemon\n\
-mkdir -p /run/bird\n\
-[ -s /etc/bird/bird.conf ] && bird\n\
-[ -s /etc/bird/bird6.conf ] && bird6\n\
-\n\
 cd /etc/bird\n\
+mkdir -p /run/bird\n\
+[ -x /etc/bird/start.sh ] && /etc/bird/start.sh\n\
+\n\
 exec bash -i' \
         > /etc/init.sh && chmod +x /etc/init.sh \
+    && /bin/echo -e '\
+\x23!/bin/sh\n\
+\n\
+[ -s /etc/bird/bird.conf ] && bird\n\
+[ -s /etc/bird/bird6.conf ] && bird6' \
+        > /etc/bird/start.sh && chmod +x /etc/bird/start.sh \
     && /bin/echo -e '\
 \x23!/usr/bin/awk -f\n\
 \n\
