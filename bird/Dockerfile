@@ -3,6 +3,7 @@
 FROM debian:jessie-slim
 
 RUN set -ex \
+    && echo 'deb [trusted=yes] http://bird.network.cz/debian/ jessie main' > /etc/apt/sources.list.d/bird.list \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
         bird net-tools telnet traceroute nano vim-tiny \
@@ -17,6 +18,7 @@ mkdir -p /run/bird\n\
 [ -s /etc/bird/bird.conf ] && bird\n\
 [ -s /etc/bird/bird6.conf ] && bird6\n\
 \n\
+cd /etc/bird\n\
 exec bash -i' \
         > /etc/init.sh && chmod +x /etc/init.sh \
     && /bin/echo -e '\
