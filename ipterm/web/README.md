@@ -25,6 +25,6 @@ This appliance contains the following networking tools:
 Before ipterm-base has to be build.
 
 ```
-docker build -t gns3/webterm .
-docker push gns3/webterm
+docker build -t webterm .
+docker push webterm
 ```

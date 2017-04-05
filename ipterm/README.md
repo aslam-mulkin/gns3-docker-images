@@ -34,18 +34,18 @@ It is divided into several sub-images:
 First the base image has to be created:
 
 ```
-docker build -t gns3/ipterm-base base
-docker push gns3/ipterm-base    (optional)
+docker build -t ipterm-base base
+docker push ipterm-base    (optional)
 ```
 
 Afterwards the cli and/or the web image can be built:
 
 ```
-docker build -t gns3/ipterm cli
-docker push gns3/ipterm
+docker build -t ipterm cli
+docker push ipterm
 ```
 
 ```
-docker build -t gns3/webterm web
-docker push gns3/webterm
+docker build -t webterm web
+docker push webterm
 ```

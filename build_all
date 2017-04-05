@@ -12,9 +12,9 @@ last_image=`docker images -q | head -n1`
 echo
 echo "*** ipterm"
 echo
-docker build $DOCKER_BUILD_OPTIONS -t gns3/ipterm-base ipterm/base
-docker build $DOCKER_BUILD_OPTIONS -t gns3/ipterm ipterm/cli
-docker build $DOCKER_BUILD_OPTIONS -t gns3/webterm ipterm/web
+docker build $DOCKER_BUILD_OPTIONS -t ehlers/ipterm-base ipterm/base
+docker build $DOCKER_BUILD_OPTIONS -t ipterm ipterm/cli
+docker build $DOCKER_BUILD_OPTIONS -t webterm ipterm/web
 
 for dockerfile in */Dockerfile; do
 	dir=`dirname $dockerfile`

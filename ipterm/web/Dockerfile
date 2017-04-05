@@ -1,6 +1,6 @@
 # docker image with basic networking tools and web browser
 
-FROM gns3/ipterm-base
+FROM ehlers/ipterm-base
 
 RUN set -ex \
 #

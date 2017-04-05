@@ -21,6 +21,6 @@ This image contains the following networking tools:
 ## Build and publish the Image
 
 ```
-docker build -t gns3/ipterm-base .
-docker push gns3/ipterm-base    (optional)
+docker build -t ipterm-base .
+docker push ipterm-base    (optional)
 ```

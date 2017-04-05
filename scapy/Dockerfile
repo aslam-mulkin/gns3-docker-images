@@ -1,6 +1,6 @@
 # docker image with scapy and basic networking tools
 
-FROM gns3/ipterm-base
+FROM ehlers/ipterm-base
 
 RUN set -ex \
     && apt-get update \
