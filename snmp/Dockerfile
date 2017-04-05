@@ -28,6 +28,7 @@ RUN set -ex \
         > /etc/menu/qtmib \
     && echo "postrun="\""sed -i '/^    </ d' debian-menu"\" >> /etc/menu-methods/jwm \
     && sed -i 's/\(Desktops width\)="[0-9]*"/\1="2"/' /etc/jwm/system.jwmrc \
+    && sed -i 's/xterm/x-terminal-emulator/g' /etc/jwm/system.jwmrc \
     && update-menus \
 #
 # set lxterminal defaults

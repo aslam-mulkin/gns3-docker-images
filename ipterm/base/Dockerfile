@@ -1,11 +1,14 @@
 # docker base image for basic networking tools
 
-FROM debian:jessie-slim
+FROM debian:stretch-slim
 
 RUN set -ex \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
         curl ca-certificates \
+# openssl is fine with perl-base, saves 40 MByte
+    && sed -i '/^Package: openssl$/,/^Depends: / s/perl\([ ,]\|$\)/perl-base\1/' /var/lib/dpkg/status \
+    && apt-get -y --purge autoremove perl \
 #
 # compile and install mtools (msend & mreceive)
 #
@@ -27,7 +30,7 @@ RUN set -ex \
 # install remaining tools
 #
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        net-tools tcpdump telnet traceroute iperf3 knot-host openssh-client mtr-tiny socat nano vim-tiny \
+        net-tools tcpdump telnet traceroute iperf3 knot-host openssh-client mtr-tiny socat procps nano vim-tiny \
     && rm -rf /var/lib/apt/lists/* \
 #
 # install run-stop from GitHub repository

@@ -5,9 +5,11 @@ FROM gns3/ipterm-base
 RUN set -ex \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        python python-crypto tcpdump python-pip \
+       python python-crypto python-ecdsa tcpdump \
+       python-pip python-setuptools python-wheel \
     && pip install scapy \
-    && apt-get -y --purge autoremove python-pip \
+    && rm -r /root/.cache \
+    && apt-get -y --purge autoremove python-pip python-setuptools python-wheel \
     && rm -rf /var/lib/apt/lists/*
 
 VOLUME [ "/root" ]

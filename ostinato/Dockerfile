@@ -1,15 +1,15 @@
 # docker image for ostinato
 
-FROM debian:jessie-slim
+FROM debian:stretch-slim
 
 RUN set -ex \
 #
 # install ostinato
 #
-    && echo 'deb [trusted=yes] http://download.opensuse.org/repositories/home:/pstavirs:/ostinato/Debian_8.0/ /' > /etc/apt/sources.list.d/ostinato.list \
+#    && echo 'deb [trusted=yes] http://download.opensuse.org/repositories/home:/pstavirs:/ostinato/Debian_8.0/ /' > /etc/apt/sources.list.d/ostinato.list \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        net-tools tcpdump telnet traceroute nano vim-tiny \
+        net-tools tcpdump telnet traceroute procps nano vim-tiny \
         ostinato lxterminal jwm menu leafpad \
 #
 # install run-stop from GitHub repository
@@ -33,6 +33,7 @@ RUN set -ex \
         > /etc/menu/ostinato \
     && echo "postrun="\""sed -i '/^    </ d' debian-menu"\" >> /etc/menu-methods/jwm \
     && sed -i 's/\(Desktops width\)="[0-9]*"/\1="2"/' /etc/jwm/system.jwmrc \
+    && sed -i 's/xterm/x-terminal-emulator/g' /etc/jwm/system.jwmrc \
     && update-menus \
 #
 # configure ostinato drone
