@@ -7,7 +7,7 @@ RUN set -ex \
     && dd if=/dev/zero bs=4 count=1 of=/etc/hostid \
     && apk add --update-cache iouyap \
     && apk add --virtual build_pkg python3-dev gcc musl-dev wget ca-certificates \
-    &&  pip3 install --quiet cx_Freeze \
+    &&  pip3 install --quiet --no-cache-dir cx_Freeze \
 # install and freeze IOUtools
     && cd /tmp \
     && wget -q https://raw.githubusercontent.com/ehlers/IOUtools/master/iou_import \
@@ -31,7 +31,8 @@ setup (\n\
     && wget -q -O /usr/local/sbin/run-stop $url \
     && chmod 755 /usr/local/sbin/run-stop \
 # cleanup
-    && echo y | pip3 uninstall --quiet cx_Freeze \
+    && pip3 uninstall --quiet --yes cx_Freeze \
+    && rm -rf /root/.cache \
     && apk del build_pkg \
     && rm -rf /var/cache/apk/*
 
