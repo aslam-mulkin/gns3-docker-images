@@ -56,15 +56,12 @@ def tac_passwd():
     # read passwd file
     f.seek(0, 0)
     lines = f.readlines()
-    found = 0
     for idx, line in enumerate(lines):
         l_user, l_passwd, remain = line.split(':', 2)
         if user == l_user:
-            found = 1
             lines[idx] = ':'.join((user, passwd, remain))
             break
-
-    if not found:
+    else:
         sys.stderr.write("{}: user '{}' does not exist\n".format(app, user))
         f.close()
         return 1
@@ -133,15 +130,12 @@ def tac_deluser():
     # read passwd file
     f.seek(0, 0)
     lines = f.readlines()
-    found = 0
     for idx, line in enumerate(lines):
         l_user, remain = line.split(':', 1)
         if user == l_user:
-            found = 1
             lines[idx] = ''
             break
-
-    if not found:
+    else:
         sys.stderr.write("{}: user '{}' does not exist\n".format(app, user))
         f.close()
         return 1
@@ -157,9 +151,9 @@ def tac_deluser():
 
 # main
 app_functions = {
-     'tac_passwd':  tac_passwd,
-     'tac_adduser': tac_adduser,
-     'tac_deluser': tac_deluser
+    'tac_passwd':  tac_passwd,
+    'tac_adduser': tac_adduser,
+    'tac_deluser': tac_deluser
 }
 
 status = 0
