@@ -7,10 +7,11 @@ RUN set -ex \
 # install ostinato
 #
 #    && echo 'deb [trusted=yes] http://download.opensuse.org/repositories/home:/pstavirs:/ostinato/Debian_8.0/ /' > /etc/apt/sources.list.d/ostinato.list \
+    && echo 'wireshark-common wireshark-common/install-setuid boolean false' | debconf-set-selections \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        net-tools tcpdump telnet traceroute procps nano vim-tiny \
-        ostinato lxterminal jwm menu leafpad \
+        net-tools telnet traceroute procps nano vim-tiny \
+        ostinato wireshark lxterminal jwm menu leafpad \
 #
 # install run-stop from GitHub repository
 #
@@ -31,6 +32,13 @@ RUN set -ex \
  title="Ostinato"\\\n\
  command="ostinato"' \
         > /etc/menu/ostinato \
+    && /bin/echo -e '\
+?package(wireshark):\\\n\
+ needs="x11"\\\n\
+ section="Applications"\\\n\
+ title="Wireshark"\\\n\
+ command="wireshark"' \
+        > /etc/menu/wireshark \
     && echo "postrun="\""sed -i '/^    </ d' debian-menu"\" >> /etc/menu-methods/jwm \
     && sed -i 's/\(Desktops width\)="[0-9]*"/\1="2"/' /etc/jwm/system.jwmrc \
     && sed -i 's/xterm/x-terminal-emulator/g' /etc/jwm/system.jwmrc \
@@ -45,6 +53,10 @@ RateAccuracy=Low\n\
 [PortList]\n\
 Include=eth*' \
         > /root/.config/Ostinato/drone.ini \
+#
+# configure wireshark
+#
+    && sed -i 's/^disable_lua *=.*/disable_lua = true/' /etc/wireshark/init.lua  \
 #
 # set lxterminal defaults
 #
@@ -72,6 +84,9 @@ for DEVICE in `comm -13 /tmp/confdev /tmp/netdev`; do\n\
 done\n\
 rm /tmp/confdev /tmp/netdev\n\
 sleep 0.5\n\
+\n\
+\x23 wireshark wants a /etc/machine-id\n\
+dd if=/dev/urandom bs=16 count=1 2>/dev/null | od -An -x | tr -d " " > /etc/machine-id\n\
 \n\
 cd\n\
 export SHELL=/bin/bash\n\
