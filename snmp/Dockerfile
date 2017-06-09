@@ -7,7 +7,6 @@ RUN set -ex \
 # install snmp tools
 #
     && sed -i -e '/^deb / s/$/ non-free/' /etc/apt/sources.list \
-    && echo 'path-include /usr/share/doc/mib*' > /etc/dpkg/dpkg.cfg.d/zz_include-mibs \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
         snmp snmp-mibs-downloader libqtgui4 lxterminal jwm menu leafpad \
