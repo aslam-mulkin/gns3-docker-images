@@ -8,7 +8,7 @@ RUN set -ex \
 #
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        tacacs+ net-tools telnet traceroute procps nano vim-tiny \
+        tacacs+ net-tools iproute2 telnet inetutils-ping traceroute procps nano vim-tiny \
 #
 # install run-stop from GitHub repository
 #

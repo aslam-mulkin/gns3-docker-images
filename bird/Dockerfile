@@ -6,7 +6,7 @@ RUN set -ex \
 #    && echo 'deb [trusted=yes] http://bird.network.cz/debian/ jessie main' > /etc/apt/sources.list.d/bird.list \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        bird net-tools telnet traceroute procps nano vim-tiny \
+        bird net-tools iproute2 telnet inetutils-ping traceroute procps nano vim-tiny \
     && rm -rf /var/lib/apt/lists/* \
     && mv /etc/bird/bird.conf /etc/bird/bird.conf.example \
     && mv /etc/bird/bird6.conf /etc/bird/bird6.conf.example \

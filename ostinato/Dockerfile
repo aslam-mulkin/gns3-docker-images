@@ -10,7 +10,7 @@ RUN set -ex \
     && echo 'wireshark-common wireshark-common/install-setuid boolean false' | debconf-set-selections \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        net-tools telnet traceroute procps nano vim-tiny \
+        net-tools iproute2 telnet inetutils-ping traceroute procps nano vim-tiny \
         ostinato wireshark lxterminal jwm menu leafpad \
 #
 # install run-stop from GitHub repository

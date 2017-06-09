@@ -30,7 +30,7 @@ RUN set -ex \
 # install remaining tools
 #
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        net-tools tcpdump telnet traceroute iperf3 knot-host openssh-client mtr-tiny socat procps nano vim-tiny \
+        net-tools iproute2 tcpdump telnet inetutils-ping traceroute iperf3 knot-host openssh-client mtr-tiny socat procps nano vim-tiny \
     && rm -rf /var/lib/apt/lists/* \
 #
 # install run-stop from GitHub repository
