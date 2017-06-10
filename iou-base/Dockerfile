@@ -6,7 +6,7 @@ FROM alpine
 RUN set -ex \
     && dd if=/dev/zero bs=4 count=1 of=/etc/hostid \
     && apk add --update-cache iouyap \
-    && apk add --virtual build_pkg py3-cx_freeze wget ca-certificates \
+    && apk add --virtual build-deps py3-cx_freeze wget ca-certificates \
 # install and freeze IOUtools
     && cd /tmp \
     && wget -q https://raw.githubusercontent.com/ehlers/IOUtools/master/iou_import \
@@ -30,7 +30,7 @@ setup (\n\
     && wget -q -O /usr/local/sbin/run-stop $url \
     && chmod 755 /usr/local/sbin/run-stop \
 # cleanup
-    && apk del build_pkg \
+    && apk del build-deps \
     && rm -rf /var/cache/apk/*
 
 ADD libc-i386.tar.gz /

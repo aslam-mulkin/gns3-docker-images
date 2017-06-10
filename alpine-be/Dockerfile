@@ -6,7 +6,7 @@ RUN set -ex \
 #
 # install run-stop and nodnsd
 #
-    && apk add --update-cache wget ca-certificates libcap \
+    && apk add --update-cache --virtual build-deps wget ca-certificates libcap \
     && mkdir -p /usr/local/sbin \
     && cd /usr/local/sbin \
     && url=`wget -q -O - https://api.github.com/repos/ehlers/run-stop/releases/latest | sed -n 's/^ *"browser_download_url": "\([^"]*_amd64\)".*/\1/p'` \
@@ -17,7 +17,7 @@ RUN set -ex \
     && chmod 755 nodnsd \
     && setcap cap_net_bind_service=+ep nodnsd \
     && cd - \
-    && apk del wget ca-certificates libcap \
+    && apk del build-deps \
     && rm -rf /var/cache/apk/* \
 #
 # startup script
