@@ -56,8 +56,23 @@ group = doauthaccess {\n\
     && /bin/echo -e '\
 \x23!/bin/sh\n\
 \n\
+tac_plus -C /etc/tacacs+/tac_plus.conf -P' \
+        > /usr/local/sbin/tac_parse && chmod +x /usr/local/sbin/tac_parse \
+    && /bin/echo -e '\
+\x23!/bin/sh\n\
+\n\
 service tacacs_plus reload' \
         > /usr/local/sbin/tac_reload && chmod +x /usr/local/sbin/tac_reload \
+    && /bin/echo -e '\
+\x23!/bin/sh\n\
+\n\
+service tacacs_plus start' \
+        > /usr/local/sbin/tac_start && chmod +x /usr/local/sbin/tac_start \
+    && /bin/echo -e '\
+\x23!/bin/sh\n\
+\n\
+service tacacs_plus stop' \
+        > /usr/local/sbin/tac_stop && chmod +x /usr/local/sbin/tac_stop \
     && chown -h root:root /usr/local/sbin/* \
 #
 # startup script
