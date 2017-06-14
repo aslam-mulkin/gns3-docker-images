@@ -6,7 +6,6 @@ RUN set -ex \
 #
 # install ostinato
 #
-#    && echo 'deb [trusted=yes] http://download.opensuse.org/repositories/home:/pstavirs:/ostinato/Debian_8.0/ /' > /etc/apt/sources.list.d/ostinato.list \
     && echo 'wireshark-common wireshark-common/install-setuid boolean false' | debconf-set-selections \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
