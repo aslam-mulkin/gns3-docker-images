@@ -2,12 +2,13 @@ FROM debian:stretch-slim
 
 RUN set -ex \
 #
-# install ftp and tftp server
+# install ftp, tftp and ssh server
 #
     && apt-get update \
     && echo 'proftpd-basic shared/proftpd/inetd_or_standalone string standalone' | debconf-set-selections \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        proftpd-basic tftpd-hpa \
+        net-tools inetutils-ping procps nano vim-tiny \
+        proftpd-basic tftpd-hpa openssh-server \
 #
 # install run-stop from GitHub repository
 #
@@ -19,10 +20,11 @@ RUN set -ex \
     && apt-get -y --purge autoremove wget ca-certificates \
     && rm -rf /var/lib/apt/lists/* \
 #
-# setup ftp, tftp
+# setup ftp, tftp and openssh
 #
     && addgroup --system ftp \
-    && usermod -d /ftp -g ftp ftp \
+    && usermod -d /ftp -g ftp -s /bin/bash ftp \
+    && /bin/echo -e "ftp\nftp" | passwd ftp 2> /dev/null \
     && /bin/echo -e '\
 \x23 A basic anonymous configuration, no security !!!\n\
 \n\
@@ -54,6 +56,14 @@ TFTP_DIRECTORY="/ftp"\n\
 TFTP_ADDRESS=":69"\n\
 TFTP_OPTIONS="--secure --permissive --create --umask 022"' \
         > /etc/default/tftpd-hpa \
+\
+    && /bin/echo -e '\
+\n\
+Ciphers +aes256-cbc\n\
+KexAlgorithms +diffie-hellman-group1-sha1\n\
+\n\
+AllowUsers ftp' >> /etc/ssh/sshd_config \
+    && rm -f /etc/ssh/ssh_host_* \
 #
 # startup script
 #
@@ -75,12 +85,16 @@ mkdir -p /ftp\n\
 chown ftp:ftp /ftp\n\
 chmod 775 /ftp\n\
 \n\
-\x23 start ftp and tftp services\n\
+\x23 create missing SSH keys\n\
+ssh-keygen -A\n\
+\n\
+\x23 start ftp, tftp and ssh services\n\
 service proftpd start\n\
 service tftpd-hpa start\n\
+service ssh start\n\
 \n\
-tail -F /var/log/proftpd/proftpd.log' \
+cd; bash -i' \
         > /etc/init.sh && chmod +x /etc/init.sh
 
-VOLUME [ "/ftp" ]
+VOLUME [ "/etc/ssh", "/ftp" ]
 CMD [ "/etc/init.sh" ]
