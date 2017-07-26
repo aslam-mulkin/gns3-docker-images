@@ -5,5 +5,5 @@ The alpine appliance has two major annoyances:
 - It tries to use localhost for DNS lookup, when no resolver is defined
 
 This appliance fixes that by using two programs:
-- run-stop, see https://github.com/ehlers/run-stop
+- dumb-init, see https://github.com/Yelp/dumb-init
 - nodnsd, see https://github.com/ehlers/nodnsd

@@ -8,16 +8,7 @@ RUN set -ex \
     && echo 'proftpd-basic shared/proftpd/inetd_or_standalone string standalone' | debconf-set-selections \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
         net-tools inetutils-ping procps nano vim-tiny \
-        proftpd-basic tftpd-hpa openssh-server \
-#
-# install run-stop from GitHub repository
-#
-    && apt-get -y --no-install-recommends install wget ca-certificates \
-    && url=`wget -q -O - https://api.github.com/repos/ehlers/run-stop/releases/latest | sed -n 's/^ *"browser_download_url": "\([^"]*_amd64\)".*/\1/p'` \
-    && if [ -z "$url" ]; then echo "run-stop not found" >&2; exit 1; fi \
-    && wget -q -O /usr/local/sbin/run-stop $url \
-    && chmod 755 /usr/local/sbin/run-stop \
-    && apt-get -y --purge autoremove wget ca-certificates \
+        dumb-init proftpd-basic tftpd-hpa openssh-server \
     && rm -rf /var/lib/apt/lists/* \
 #
 # setup ftp, tftp and openssh
@@ -69,7 +60,7 @@ AllowUsers ftp' >> /etc/ssh/sshd_config \
 #
     && /bin/echo -e '\
 \x23!/bin/sh\n\
-[ $$ -eq 1 ] && exec run-stop -- "$0" "$@"\n\
+[ $$ -eq 1 ] && exec dumb-init -- "$0" "$@"\n\
 \n\
 \x23 try to set ftp to same user/group id as GNS3 process\n\
 \x23 /etc/network/interfaces is managed by GNS3\n\

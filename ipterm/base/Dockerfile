@@ -30,12 +30,6 @@ RUN set -ex \
 # install remaining tools
 #
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        net-tools iproute2 tcpdump telnet inetutils-ping traceroute iperf3 knot-host openssh-client mtr-tiny socat procps nano vim-tiny \
+        net-tools iproute2 telnet inetutils-ping traceroute procps nano vim-tiny \
+        dumb-init iperf3 knot-host mtr-tiny openssh-client socat tcpdump \
     && rm -rf /var/lib/apt/lists/* \
-#
-# install run-stop from GitHub repository
-#
-    && url=`curl -s -S -L https://api.github.com/repos/ehlers/run-stop/releases/latest | sed -n 's/^ *"browser_download_url": "\([^"]*_amd64\)".*/\1/p'` \
-    && if [ -z "$url" ]; then echo "run-stop not found" >&2; exit 1; fi \
-    && curl -s -S -L -o /usr/local/sbin/run-stop $url \
-    && chmod 755 /usr/local/sbin/run-stop

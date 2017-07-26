@@ -8,16 +8,8 @@ RUN set -ex \
 #
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
-        tacacs+ net-tools iproute2 telnet inetutils-ping traceroute procps nano vim-tiny \
-#
-# install run-stop from GitHub repository
-#
-    && apt-get -y --no-install-recommends install wget ca-certificates \
-    && url=`wget -q -O - https://api.github.com/repos/ehlers/run-stop/releases/latest | sed -n 's/^ *"browser_download_url": "\([^"]*_amd64\)".*/\1/p'` \
-    && if [ -z "$url" ]; then echo "run-stop not found" >&2; exit 1; fi \
-    && wget -q -O /usr/local/sbin/run-stop $url \
-    && chmod 755 /usr/local/sbin/run-stop \
-    && apt-get -y --purge autoremove wget ca-certificates \
+        net-tools iproute2 telnet inetutils-ping traceroute procps nano vim-tiny \
+        dumb-init tacacs+ \
     && rm -rf /var/lib/apt/lists/* \
 #
 # tac_plus.conf template for do_auth
@@ -79,7 +71,7 @@ service tacacs_plus stop' \
 #
     && /bin/echo -e '\
 \x23!/bin/sh\n\
-[ $$ -eq 1 ] && exec run-stop -- "$0" "$@"\n\
+[ $$ -eq 1 ] && exec dumb-init -- "$0" "$@"\n\
 \n\
 service tacacs_plus start\n\
 \n\
