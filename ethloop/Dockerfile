@@ -2,7 +2,7 @@
 
 FROM alpine
 
-ADD ethloop.c /root/
+COPY ethloop.c /root/
 
 RUN set -ex \
     && cd /root \

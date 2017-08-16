@@ -1,6 +1,6 @@
 FROM debian:stretch-slim
 
-ADD tac_passwd /usr/local/sbin/
+COPY tac_passwd /usr/local/sbin/
 
 RUN set -ex \
 #
