@@ -2,6 +2,8 @@
 
 FROM debian:stretch-slim
 
+COPY ostinato*.deb python-ostinato*.tar.gz /tmp/
+
 RUN set -ex \
 #
 # install ostinato
@@ -10,10 +12,10 @@ RUN set -ex \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
         net-tools iproute2 telnet inetutils-ping traceroute procps nano vim-tiny \
-        dumb-init ostinato wireshark tshark lxterminal jwm menu leafpad \
+        dumb-init /tmp/ostinato*.deb wireshark tshark lxterminal jwm menu leafpad \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
         python python-pip python-setuptools python-wheel python-protobuf \
-    && pip install --no-cache-dir python-ostinato==0.8 \
+    && pip install --no-cache-dir /tmp/python-ostinato*.tar.gz \
     && rm -rf /var/lib/apt/lists/* \
 #
 # customize jwm menu
