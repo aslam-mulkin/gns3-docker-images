@@ -8,7 +8,7 @@ the sources at https://github.com/ansible/ansible .
 
 This appliance contains the following networking tools:
 
-- Ansible
+- Ansible  
   including the dependencies for the junos network modules
 - net-tools (basic network administration tools)
 - iproute2 (advanced network administration tools)

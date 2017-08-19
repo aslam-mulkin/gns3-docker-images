@@ -14,7 +14,6 @@ RUN set -ex \
 #
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
        python-lxml python-netaddr python-scp python-serial \
-
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
        python-pip python-wheel \
     && pip install --no-cache-dir ncclient jxmlease junos-eznc \
