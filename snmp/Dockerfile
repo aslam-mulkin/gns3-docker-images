@@ -45,6 +45,9 @@ fgcolor=#ffffff' \
 \x23!/bin/sh\n\
 [ $$ -eq 1 ] && exec dumb-init -- "$0" "$@"\n\
 \n\
+\x23 workaround: sometimes the first start of an X application fails\n\
+lxterminal -e true 2> /dev/null\n\
+\n\
 cd\n\
 export SHELL=/bin/bash\n\
 qtmib &\n\

@@ -83,6 +83,9 @@ sleep 0.5\n\
 \x23 wireshark wants a /etc/machine-id\n\
 dd if=/dev/urandom bs=16 count=1 2>/dev/null | od -An -x | tr -d " " > /etc/machine-id\n\
 \n\
+\x23 workaround: sometimes the first start of an X application fails\n\
+lxterminal -e true 2> /dev/null\n\
+\n\
 cd\n\
 export SHELL=/bin/bash\n\
 drone < /dev/null > /var/log/ostinato-drone.log 2>&1 &\n\

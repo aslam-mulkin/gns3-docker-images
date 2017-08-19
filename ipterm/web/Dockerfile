@@ -20,14 +20,7 @@ RUN set -ex \
 [ -e "$HOME/.mozilla" ] || start_url="about:home"\n\
 \n\
 \x23 start firefox\n\
-start=$(date +%s)\n\
-firefox $start_url\n\
-status=$?\n\
-\n\
-\x23 workaround: restart firefox, if it crashes during initialization\n\
-if [ $status -eq 139 -a $(($(date +%s)-start)) -le 10 ]; then\n\
-	firefox $start_url\n\
-fi' \
+firefox $start_url' \
         > /usr/local/bin/start-firefox && chmod +x /usr/local/bin/start-firefox \
 #
 # customize jwm menu
@@ -58,6 +51,9 @@ fgcolor=#ffffff' \
     && /bin/echo -e '\
 \x23!/bin/sh\n\
 [ $$ -eq 1 ] && exec dumb-init -- "$0" "$@"\n\
+\n\
+\x23 workaround: sometimes the first start of an X application fails\n\
+lxterminal -e true 2> /dev/null\n\
 \n\
 cd\n\
 export SHELL=/bin/bash\n\
