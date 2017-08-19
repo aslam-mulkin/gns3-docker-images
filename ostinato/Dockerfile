@@ -80,6 +80,10 @@ done\n\
 rm /tmp/confdev /tmp/netdev\n\
 sleep 0.5\n\
 \n\
+\x23 disable ostinato update, makes no sense in this environment\n\
+fgrep -q -w update.ostinato.org /etc/hosts || \\\n\
+	/bin/echo -e "\\n# disable ostinato update\\n127.0.0.127\\tupdate.ostinato.org" >> /etc/hosts\n\
+\n\
 \x23 wireshark wants a /etc/machine-id\n\
 dd if=/dev/urandom bs=16 count=1 2>/dev/null | od -An -x | tr -d " " > /etc/machine-id\n\
 \n\
