@@ -1,0 +1,3 @@
+#!/bin/sh
+
+docker run --rm --tty --volume `pwd`:/build debian:stretch-slim sh /build/build_ostinato

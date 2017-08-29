@@ -1,0 +1,39 @@
+set -e -x
+
+DEB_VERSION=0.8-2
+GIT_COMMIT=
+
+owner=`stat -c "%u:%g" /build`
+
+cd
+apt-get update
+apt-get install -y --no-install-recommends build-essential debhelper
+apt-get install -y --no-install-recommends git ca-certificates
+apt-get install -y --no-install-recommends libpcap-dev libprotobuf-dev libqt4-dev protobuf-compiler
+
+git clone https://github.com/pstavirs/ostinato.git
+cd ostinato
+[ -n "$GIT_COMMIT" ] && git checkout "$GIT_COMMIT"
+tar xf /build/ostinato_*.debian.tar.xz
+if [ -n "$DEB_VERSION" ]; then
+	cat - debian/changelog > debian/changelog.new << EOF
+ostinato (${DEB_VERSION}) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Bernhard Ehlers <be@bernhard-ehlers.de>  `TZ=CET date -R`
+
+EOF
+	mv debian/changelog.new debian/changelog
+fi
+
+dpkg-buildpackage -us -uc -b
+chown $owner ../ostinato_*.deb
+cp -p ../ostinato_*.deb /build/
+
+cd binding
+apt-get install -y --no-install-recommends python python-setuptools
+python setup.py sdist
+[ -n "$DEB_VERSION" ] && mv dist/python-ostinato-*.tar.gz "dist/python-ostinato-$DEB_VERSION.tar.gz"
+chown $owner dist/python-ostinato-*.tar.gz
+cp -p dist/python-ostinato-*.tar.gz /build/
