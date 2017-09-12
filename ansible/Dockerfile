@@ -16,8 +16,10 @@ RUN set -ex \
        python-lxml python-netaddr python-scp python-serial \
     && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
        python-pip python-wheel \
+    && DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
+       nano \   
     && pip install --no-cache-dir ncclient jxmlease junos-eznc \
-    && apt-get autoremove -y --purge python-pip python-wheel \
+#    && apt-get autoremove -y --purge python-pip python-wheel \
     && rm -rf /var/lib/apt/lists/* \
 #
 # startup script
